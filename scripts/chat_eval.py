@@ -18,6 +18,7 @@ import torch.distributed as dist
 from nanochat.common import compute_init, compute_cleanup, get_dist_info, print0, autodetect_device_type
 from nanochat.checkpoint_manager import load_model
 from nanochat.engine import Engine
+from nanochat.provenance import collect_run_provenance
 
 from tasks.humaneval import HumanEval
 from tasks.mmlu import MMLU
@@ -196,6 +197,7 @@ if __name__ == "__main__":
     parser.add_argument('-x', '--max-problems', type=int, default=None, help='Max problems to evaluate')
     parser.add_argument('--device-type', type=str, default='', choices=['cuda', 'cpu', 'mps'], help='Device type for evaluation: cuda|cpu|mps. empty => autodetect')
     args = parser.parse_args()
+    evaluation_provenance = collect_run_provenance(vars(args))
 
     device_type = autodetect_device_type() if args.device_type == "" else args.device_type
     ddp, ddp_rank, ddp_local_rank, ddp_world_size, device = compute_init(device_type)
@@ -250,6 +252,17 @@ if __name__ == "__main__":
         chatcore_metric_dict = {"ChatCORE metric": chatcore_metric}
     get_report().log(section="Chat evaluation " + args.source, data=[
         vars(args), # CLI args
+        {
+            "checkpoint step": meta.get("step"),
+            "checkpoint config sha256": meta.get("provenance", {}).get(
+                "config_sha256"
+            ),
+            "checkpoint git commit": meta.get("provenance", {})
+            .get("git", {})
+            .get("commit"),
+            "evaluation config sha256": evaluation_provenance["config_sha256"],
+            "evaluation git commit": evaluation_provenance["git"]["commit"],
+        },
         results,
         chatcore_metric_dict,
     ])

@@ -11,6 +11,21 @@ import torch
 import torch.distributed as dist
 from torch import Tensor
 
+_OPTIMIZER_KERNEL_MODE = "compiled"
+
+
+def set_optimizer_kernel_mode(mode: str) -> None:
+    """Select compiled kernels or the compatibility-oriented eager fallback."""
+    if mode not in {"compiled", "eager"}:
+        raise ValueError("optimizer kernel mode must be 'compiled' or 'eager'")
+    global _OPTIMIZER_KERNEL_MODE
+    _OPTIMIZER_KERNEL_MODE = mode
+
+
+def get_optimizer_kernel_mode() -> str:
+    return _OPTIMIZER_KERNEL_MODE
+
+
 # -----------------------------------------------------------------------------
 """
 Good old AdamW optimizer, fused kernel.
@@ -18,7 +33,7 @@ https://arxiv.org/abs/1711.05101
 """
 
 @torch.compile(dynamic=False, fullgraph=True)
-def adamw_step_fused(
+def _adamw_step_compiled(
     p: Tensor,              # (32768, 768) - parameter tensor
     grad: Tensor,           # (32768, 768) - gradient, same shape as p
     exp_avg: Tensor,        # (32768, 768) - first moment, same shape as p
@@ -47,6 +62,45 @@ def adamw_step_fused(
     denom = (exp_avg_sq / bias2).sqrt() + eps_t
     step_size = lr_t / bias1
     p.add_(exp_avg / denom, alpha=-step_size)
+
+
+def _adamw_step_eager(
+    p: Tensor,
+    grad: Tensor,
+    exp_avg: Tensor,
+    exp_avg_sq: Tensor,
+    step_t: Tensor,
+    lr_t: Tensor,
+    beta1_t: Tensor,
+    beta2_t: Tensor,
+    eps_t: Tensor,
+    wd_t: Tensor,
+) -> None:
+    """Eager fallback for environments where Dynamo cannot mix CPU scalars."""
+    learning_rate = lr_t.item()
+    weight_decay = wd_t.item()
+    beta1 = beta1_t.item()
+    beta2 = beta2_t.item()
+    step = step_t.item()
+    epsilon = eps_t.item()
+
+    p.mul_(1 - learning_rate * weight_decay)
+    exp_avg.lerp_(grad, 1 - beta1)
+    exp_avg_sq.lerp_(grad.square(), 1 - beta2)
+    bias1 = 1 - beta1**step
+    bias2 = 1 - beta2**step
+    denominator = (exp_avg_sq / bias2).sqrt() + epsilon
+    p.add_(exp_avg / denominator, alpha=-(learning_rate / bias1))
+
+
+def adamw_step_fused(*args) -> None:
+    implementation = (
+        _adamw_step_compiled
+        if _OPTIMIZER_KERNEL_MODE == "compiled"
+        else _adamw_step_eager
+    )
+    implementation(*args)
+
 
 # -----------------------------------------------------------------------------
 """
@@ -84,7 +138,7 @@ polar_express_coeffs = [
 ]
 
 @torch.compile(dynamic=False, fullgraph=True)
-def muon_step_fused(
+def _muon_step_compiled(
     stacked_grads: Tensor,          # (12, 768, 3072) - stacked gradients
     stacked_params: Tensor,         # (12, 768, 3072) - stacked parameters
     momentum_buffer: Tensor,        # (12, 768, 3072) - first moment buffer
@@ -140,6 +194,80 @@ def muon_step_fused(
     wd = wd_t.to(g.dtype)
     mask = (g * stacked_params) >= 0
     stacked_params.sub_(lr * g + lr * wd * stacked_params * mask)
+
+
+def _muon_step_eager(
+    stacked_grads: Tensor,
+    stacked_params: Tensor,
+    momentum_buffer: Tensor,
+    second_momentum_buffer: Tensor,
+    momentum_t: Tensor,
+    lr_t: Tensor,
+    wd_t: Tensor,
+    beta2_t: Tensor,
+    ns_steps: int,
+    red_dim: int,
+) -> None:
+    """Eager Muon fallback with Python scalars for cross-device compatibility."""
+    momentum = momentum_t.item()
+    momentum_buffer.lerp_(stacked_grads, 1 - momentum)
+    update = stacked_grads.lerp_(momentum_buffer, momentum)
+
+    orthogonal = update.bfloat16()
+    orthogonal = orthogonal / (
+        orthogonal.norm(dim=(-2, -1), keepdim=True) * 1.02 + 1e-6
+    )
+    if update.size(-2) > update.size(-1):
+        for a, b, c in polar_express_coeffs[:ns_steps]:
+            gram = orthogonal.mT @ orthogonal
+            transform = b * gram + c * (gram @ gram)
+            orthogonal = a * orthogonal + orthogonal @ transform
+    else:
+        for a, b, c in polar_express_coeffs[:ns_steps]:
+            gram = orthogonal @ orthogonal.mT
+            transform = b * gram + c * (gram @ gram)
+            orthogonal = a * orthogonal + transform @ orthogonal
+    update = orthogonal
+
+    beta2_weight = 1 - beta2_t.item()
+    variance_mean = update.float().square().mean(dim=red_dim, keepdim=True)
+    reduction_size = update.size(red_dim)
+    variance_norm = (
+        variance_mean.sum(dim=(-2, -1), keepdim=True) * reduction_size
+    ).sqrt()
+    second_momentum_buffer.lerp_(
+        variance_mean.to(dtype=second_momentum_buffer.dtype),
+        beta2_weight,
+    )
+    step_size = second_momentum_buffer.clamp_min(1e-10).rsqrt()
+    scaled_square_sum = (
+        variance_mean * reduction_size * step_size.float().square()
+    )
+    new_variance_norm = scaled_square_sum.sum(
+        dim=(-2, -1), keepdim=True
+    ).sqrt()
+    final_scale = step_size * (
+        variance_norm / new_variance_norm.clamp_min(1e-10)
+    )
+    update = update * final_scale.to(update.dtype)
+
+    learning_rate = lr_t.item()
+    weight_decay = wd_t.item()
+    decay_mask = update * stacked_params >= 0
+    stacked_params.sub_(
+        learning_rate * update
+        + learning_rate * weight_decay * stacked_params * decay_mask
+    )
+
+
+def muon_step_fused(*args) -> None:
+    implementation = (
+        _muon_step_compiled
+        if _OPTIMIZER_KERNEL_MODE == "compiled"
+        else _muon_step_eager
+    )
+    implementation(*args)
+
 
 # -----------------------------------------------------------------------------
 # Single GPU version of the MuonAdamW optimizer.
@@ -367,6 +495,8 @@ class DistMuonAdamW(torch.optim.Optimizer):
         param_infos = {}
         for p in group['params']:
             grad = p.grad
+            if grad is None:
+                continue
             if p.numel() < 1024:
                 # Small params: all_reduce (no scatter/gather needed)
                 future = dist.all_reduce(grad, op=dist.ReduceOp.AVG, async_op=True).get_future()
@@ -404,6 +534,8 @@ class DistMuonAdamW(torch.optim.Optimizer):
         """Wait for reduce, compute AdamW updates, launch gathers for large params."""
         param_infos = info['param_infos']
         for p in group['params']:
+            if p not in param_infos:
+                continue
             pinfo = param_infos[p]
             pinfo['future'].wait()
             grad_slice = pinfo['grad_slice']

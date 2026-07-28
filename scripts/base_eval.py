@@ -40,6 +40,7 @@ from nanochat.core_eval import evaluate_task
 from nanochat.dataloader import tokenizing_distributed_data_loader_bos_bestfit
 from nanochat.loss_eval import evaluate_bpb
 from nanochat.engine import Engine
+from nanochat.provenance import collect_run_provenance
 
 # -----------------------------------------------------------------------------
 # HuggingFace loading utilities
@@ -188,6 +189,7 @@ def main():
     parser.add_argument('--split-tokens', type=int, default=40*524288, help='Number of tokens to evaluate per split for BPB')
     parser.add_argument('--device-type', type=str, default='', help='cuda|cpu|mps (empty = autodetect)')
     args = parser.parse_args()
+    evaluation_provenance = collect_run_provenance(vars(args))
 
     # Parse evaluation modes
     eval_modes = set(mode.strip() for mode in args.eval.split(','))
@@ -308,6 +310,21 @@ def main():
     # --- Log to report ---
     from nanochat.report import get_report
     report_data = [{"model": model_name}]
+    report_data[0]["evaluation config sha256"] = evaluation_provenance[
+        "config_sha256"
+    ]
+    report_data[0]["evaluation git commit"] = evaluation_provenance["git"][
+        "commit"
+    ]
+    if not is_hf_model:
+        checkpoint_provenance = meta.get("provenance", {})
+        report_data[0]["checkpoint step"] = meta.get("step")
+        report_data[0]["checkpoint config sha256"] = checkpoint_provenance.get(
+            "config_sha256"
+        )
+        report_data[0]["checkpoint git commit"] = checkpoint_provenance.get(
+            "git", {}
+        ).get("commit")
 
     if core_results:
         report_data[0]["CORE metric"] = core_results["core_metric"]

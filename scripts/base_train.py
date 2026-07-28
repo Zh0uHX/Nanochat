@@ -29,6 +29,8 @@ from nanochat.checkpoint_manager import save_checkpoint, load_checkpoint
 from nanochat.loss_eval import evaluate_bpb
 from nanochat.engine import Engine
 from nanochat.flash_attention import HAS_FA3
+from nanochat.optim import set_optimizer_kernel_mode
+from nanochat.provenance import collect_run_provenance
 from scripts.base_eval import evaluate_core
 print_banner()
 
@@ -39,6 +41,7 @@ parser = argparse.ArgumentParser(description="Pretrain base model")
 parser.add_argument("--run", type=str, default="dummy", help="wandb run name ('dummy' disables wandb logging)")
 # Runtime
 parser.add_argument("--device-type", type=str, default="", help="cuda|cpu|mps (empty = autodetect)")
+parser.add_argument("--optimizer-kernel", type=str, default="compiled", choices=["compiled", "eager"], help="compiled fast path or eager compatibility fallback")
 # FP8 training
 parser.add_argument("--fp8", action="store_true", help="enable FP8 training (requires H100+ GPU and torchao)")
 parser.add_argument("--fp8-recipe", type=str, default="tensorwise", choices=["rowwise", "tensorwise"], help="FP8 scaling recipe: tensorwise (faster, recommended) or rowwise (more accurate but slower)")
@@ -77,6 +80,8 @@ parser.add_argument("--save-every", type=int, default=-1, help="save checkpoints
 parser.add_argument("--model-tag", type=str, default=None, help="override model tag for checkpoint directory name")
 args = parser.parse_args()
 user_config = vars(args).copy()  # for logging
+set_optimizer_kernel_mode(args.optimizer_kernel)
+run_provenance = collect_run_provenance(user_config)
 # -----------------------------------------------------------------------------
 
 # Compute init
@@ -432,6 +437,7 @@ while True:
                 "val_bpb": val_bpb, # loss at last step
                 "model_config": model_config_kwargs,
                 "user_config": user_config, # inputs to the training script
+                "provenance": run_provenance,
                 "device_batch_size": args.device_batch_size,
                 "max_seq_len": args.max_seq_len,
                 "dataloader_state_dict": dataloader_state_dict,
@@ -543,6 +549,9 @@ get_report().log(section="Base model training", data=[
         "Number of training tokens": total_tokens,
         "Tokens : Scaling params ratio": args.total_batch_size * num_iterations / num_scaling_params,
         "DDP world size": ddp_world_size,
+        "Config SHA256": run_provenance["config_sha256"],
+        "Git commit": run_provenance["git"]["commit"],
+        "Git dirty": run_provenance["git"]["dirty"],
         "warmup_ratio": args.warmup_ratio,
         "warmdown_ratio": args.warmdown_ratio,
         "final_lr_frac": args.final_lr_frac,
