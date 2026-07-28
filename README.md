@@ -1,4 +1,4 @@
-# AllenGPT Systems Lab
+# Nanochat
 
 An LLM training-systems portfolio built as an explicitly attributed fork of
 [karpathy/nanochat](https://github.com/karpathy/nanochat).
