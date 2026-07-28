@@ -1,9 +1,19 @@
 .venv/
+.local-tools/
 __pycache__/
 *.pyc
+.DS_Store
 dev-ignore/
 report.md
 eval_bundle/
+nanochat_data/
+benchmark_results/
+artifacts/raw/
+smoltalk_samples.json
+*.pt
+*.pth
+*.safetensors
+*.tar.gz
 
 # Secrets
 .env

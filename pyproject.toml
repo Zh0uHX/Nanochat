@@ -1,7 +1,7 @@
 [project]
 name = "nanochat"
 version = "0.1.0"
-description = "the minimal full-stack ChatGPT clone"
+description = "Reproducible LLM systems research built on nanochat"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -65,6 +65,9 @@ cpu = [
 gpu = [
     "torch==2.9.1",
 ]
+
+[project.urls]
+Upstream = "https://github.com/karpathy/nanochat"
 
 [tool.uv]
 conflicts = [

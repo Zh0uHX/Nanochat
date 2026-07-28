@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "historical_run_before_reproducibility_refactor",
+  "training_environment": {
+    "cuda": "12.8",
+    "gpus": "8x NVIDIA A100-SXM4-80GB",
+    "pytorch": "2.9.1+cu128",
+    "upstream_commit": "542beb0",
+    "working_tree_was_dirty": true
+  },
+  "base_checkpoint": {
+    "step": 14889,
+    "parameters": 1681790292,
+    "training_tokens": 7806124032,
+    "validation_bpb": 0.7433137026221679,
+    "mfu_percent_reported": 45.86,
+    "wall_minutes_reported": 701.81
+  },
+  "sft_checkpoint": {
+    "step": 747,
+    "validation_bpb": 0.32453147087680845,
+    "packing_mixture": "SmolTalk + 2x identity conversations in archived script"
+  },
+  "excluded_result": {
+    "reason": "evaluation report identifies base_model step 169150, which does not match the archived base checkpoint step 14889",
+    "reported_step": 169150,
+    "reported_core": 0.3405,
+    "reported_validation_bpb": 0.6759
+  }
+}
