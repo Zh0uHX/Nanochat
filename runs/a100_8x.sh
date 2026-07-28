@@ -14,7 +14,7 @@ command -v uv >/dev/null 2>&1 || {
 }
 
 PROJECT_CACHE_ROOT="${XDG_CACHE_HOME:-${HOME}/.cache}"
-export NANOCHAT_BASE_DIR="${NANOCHAT_BASE_DIR:-${PROJECT_CACHE_ROOT}/allen-gpt}"
+export NANOCHAT_BASE_DIR="${NANOCHAT_BASE_DIR:-${PROJECT_CACHE_ROOT}/nanochat}"
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-1}"
 export WANDB_RUN="${WANDB_RUN:-a100-d26}"
 

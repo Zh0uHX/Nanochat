@@ -97,7 +97,7 @@ By default nanochat stores data and checkpoints under `~/.cache/nanochat`.
 For attached storage:
 
 ```bash
-export NANOCHAT_BASE_DIR=/path/to/large/storage/allen-gpt
+export NANOCHAT_BASE_DIR=/path/to/large/storage/nanochat
 ```
 
 Do not place `.pt`, `.safetensors`, parquet/Arrow caches, or optimizer shards in
@@ -140,7 +140,7 @@ bash runs/runcpu.sh
 ### Reproducible 8×A100 pipeline
 
 ```bash
-NANOCHAT_BASE_DIR=/attached/storage/allen-gpt \
+NANOCHAT_BASE_DIR=/attached/storage/nanochat \
 WANDB_RUN=a100-d26 \
 bash runs/a100_8x.sh
 ```

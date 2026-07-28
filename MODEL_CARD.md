@@ -1,4 +1,4 @@
-# Model card: AllenGPT research checkpoints
+# Model card: Nanochat research checkpoints
 
 ## Status
 

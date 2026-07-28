@@ -1,1 +1,1 @@
-"""Reproducible microbenchmarks for the AllenGPT Systems Lab fork."""
+"""Reproducible microbenchmarks for the Nanochat research fork."""
