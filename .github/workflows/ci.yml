@@ -21,7 +21,11 @@ jobs:
           enable-cache: true
       - name: Install locked CPU environment
         run: uv sync --frozen --extra cpu
+      - name: Verify CPU PyTorch
+        run: |
+          uv run --frozen --extra cpu python -c \
+            "import torch; assert torch.version.cuda is None, torch.version.cuda; print(torch.__version__)"
       - name: Syntax check
-        run: uv run python -m compileall -q nanochat scripts tasks tests benchmarks
+        run: uv run --frozen --extra cpu python -m compileall -q nanochat scripts tasks tests benchmarks
       - name: Unit tests
-        run: uv run pytest -m "not slow" -q
+        run: uv run --frozen --extra cpu python -m pytest -m "not slow" -q

@@ -115,13 +115,13 @@ python -m unittest tests.test_sft_packer tests.test_state_io -v
 Full CPU suite:
 
 ```bash
-uv run pytest -m "not slow" -q
+uv run --frozen --extra cpu python -m pytest -m "not slow" -q
 ```
 
 GPU/compiled-kernel parity:
 
 ```bash
-uv run pytest tests/test_optimizer_kernels.py -m slow -v
+uv run --frozen --extra gpu python -m pytest tests/test_optimizer_kernels.py -m slow -v
 ```
 
 GitHub Actions installs the locked CPU environment, performs a syntax check,
