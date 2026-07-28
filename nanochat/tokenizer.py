@@ -344,9 +344,11 @@ class RustBPETokenizer:
                     raise ValueError(f"Unknown content type: {type(content)}")
                 add_tokens(assistant_end, 1)
 
-        # truncate to max_tokens tokens MAX (helps prevent OOMs)
-        ids = ids[:max_tokens]
-        mask = mask[:max_tokens]
+        # ``None`` lets a caller inspect the true length and apply an explicit
+        # overflow policy. The default remains bounded for existing call sites.
+        if max_tokens is not None:
+            ids = ids[:max_tokens]
+            mask = mask[:max_tokens]
         return ids, mask
 
     def visualize_tokenization(self, ids, mask, with_token_id=False):
