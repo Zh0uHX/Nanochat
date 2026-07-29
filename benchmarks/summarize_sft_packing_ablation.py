@@ -35,6 +35,7 @@ def parse_args():
     parser.add_argument("--input-dir", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--checkpoint-sha256", default="")
+    parser.add_argument("--dataset-manifest", default="")
     return parser.parse_args()
 
 
@@ -133,7 +134,11 @@ def summarize_run(
     }
 
 
-def build_summary(input_dir, checkpoint_sha256=""):
+def build_summary(
+    input_dir,
+    checkpoint_sha256="",
+    dataset_manifest_path=None,
+):
     runs = load_runs(input_dir)
     common = validate_runs(runs)
     sequential_payload = runs["sequential"][1]
@@ -153,6 +158,12 @@ def build_summary(input_dir, checkpoint_sha256=""):
         )
         for path, payload in runs.values()
     ]
+    dataset_manifest = None
+    dataset_manifest_sha256 = None
+    if dataset_manifest_path is not None:
+        with dataset_manifest_path.open(encoding="utf-8") as handle:
+            dataset_manifest = json.load(handle)
+        dataset_manifest_sha256 = sha256_file(dataset_manifest_path)
     return {
         "schema_version": 1,
         "benchmark": "sft_packing_fixed_budget_summary",
@@ -167,6 +178,8 @@ def build_summary(input_dir, checkpoint_sha256=""):
             "sha256": checkpoint_sha256 or None,
         },
         "model_parameters": common["model_parameters"],
+        "dataset_manifest": dataset_manifest,
+        "dataset_manifest_sha256": dataset_manifest_sha256,
         "strategies": rows,
         "limitations": [
             "One 30-step target-scale run per strategy; no multi-seed uncertainty estimate.",
@@ -183,6 +196,9 @@ def main():
     summary = build_summary(
         Path(args.input_dir),
         checkpoint_sha256=args.checkpoint_sha256,
+        dataset_manifest_path=(
+            Path(args.dataset_manifest) if args.dataset_manifest else None
+        ),
     )
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
