@@ -1,0 +1,636 @@
+{
+  "aggregate": [
+    {
+      "context_length": 128,
+      "mode": "kv_cache",
+      "peak_memory_bytes": {
+        "max": 7124821504,
+        "mean": 7124821504.0,
+        "min": 7124821504,
+        "stdev": 0.0
+      },
+      "repeats": 3,
+      "tpot_ms": {
+        "max": 23.239903211120573,
+        "mean": 23.101606825120232,
+        "min": 23.02265637332485,
+        "stdev": 0.12016864009821555
+      },
+      "ttft_ms": {
+        "max": 32.3360338807106,
+        "mean": 31.2178668876489,
+        "min": 30.511807650327682,
+        "stdev": 0.979451344713132
+      }
+    },
+    {
+      "context_length": 128,
+      "mode": "naive",
+      "peak_memory_bytes": {
+        "max": 7152976896,
+        "mean": 7152976896.0,
+        "min": 7152976896,
+        "stdev": 0.0
+      },
+      "repeats": 3,
+      "tpot_ms": {
+        "max": 15.027414977787034,
+        "mean": 14.97231224778468,
+        "min": 14.91588153063305,
+        "stdev": 0.05577858120205423
+      },
+      "ttft_ms": {
+        "max": 20.354196429252625,
+        "mean": 19.115634262561798,
+        "min": 18.062205985188484,
+        "stdev": 1.157156414081824
+      }
+    },
+    {
+      "context_length": 512,
+      "mode": "kv_cache",
+      "peak_memory_bytes": {
+        "max": 7346500096,
+        "mean": 7346500096.0,
+        "min": 7346500096,
+        "stdev": 0.0
+      },
+      "repeats": 3,
+      "tpot_ms": {
+        "max": 23.204258805702604,
+        "mean": 23.083845853174807,
+        "min": 23.005388972778167,
+        "stdev": 0.10586565355843612
+      },
+      "ttft_ms": {
+        "max": 38.05573843419552,
+        "mean": 37.887156630555786,
+        "min": 37.62227110564709,
+        "stdev": 0.23222679922312434
+      }
+    },
+    {
+      "context_length": 512,
+      "mode": "naive",
+      "peak_memory_bytes": {
+        "max": 7358375936,
+        "mean": 7358375936.0,
+        "min": 7358375936,
+        "stdev": 0.0
+      },
+      "repeats": 3,
+      "tpot_ms": {
+        "max": 25.695088422960705,
+        "mean": 25.657163459866766,
+        "min": 25.626558366985545,
+        "stdev": 0.03484648501553546
+      },
+      "ttft_ms": {
+        "max": 25.48513375222683,
+        "mean": 24.60420752565066,
+        "min": 23.438338190317154,
+        "stdev": 1.0527285735100513
+      }
+    },
+    {
+      "context_length": 1024,
+      "mode": "kv_cache",
+      "peak_memory_bytes": {
+        "max": 7644135936,
+        "mean": 7644135936.0,
+        "min": 7644135936,
+        "stdev": 0.0
+      },
+      "repeats": 3,
+      "tpot_ms": {
+        "max": 23.22401694716915,
+        "mean": 23.13316472505451,
+        "min": 23.063887945479816,
+        "stdev": 0.08221586882166815
+      },
+      "ttft_ms": {
+        "max": 49.004318192601204,
+        "mean": 48.66142322619756,
+        "min": 48.41774329543114,
+        "stdev": 0.3056145365814423
+      }
+    },
+    {
+      "context_length": 1024,
+      "mode": "naive",
+      "peak_memory_bytes": {
+        "max": 7634732032,
+        "mean": 7634732032.0,
+        "min": 7634732032,
+        "stdev": 0.0
+      },
+      "repeats": 3,
+      "tpot_ms": {
+        "max": 45.600193212666206,
+        "mean": 45.33807490829122,
+        "min": 44.85075959255771,
+        "stdev": 0.4224310099659377
+      },
+      "ttft_ms": {
+        "max": 40.166882798075676,
+        "mean": 39.82194016377131,
+        "min": 39.489440619945526,
+        "stdev": 0.3388924594217522
+      }
+    },
+    {
+      "context_length": 1536,
+      "mode": "kv_cache",
+      "peak_memory_bytes": {
+        "max": 7936201216,
+        "mean": 7936201216.0,
+        "min": 7936201216,
+        "stdev": 0.0
+      },
+      "repeats": 3,
+      "tpot_ms": {
+        "max": 23.400085963427074,
+        "mean": 23.239877863378123,
+        "min": 23.142135302935326,
+        "stdev": 0.13986097933572728
+      },
+      "ttft_ms": {
+        "max": 70.54059021174908,
+        "mean": 70.42656963070233,
+        "min": 70.32186537981033,
+        "stdev": 0.10965962580786948
+      }
+    },
+    {
+      "context_length": 1536,
+      "mode": "naive",
+      "peak_memory_bytes": {
+        "max": 7905243136,
+        "mean": 7905243136.0,
+        "min": 7905243136,
+        "stdev": 0.0
+      },
+      "repeats": 3,
+      "tpot_ms": {
+        "max": 61.023357457348276,
+        "mean": 60.70425091360611,
+        "min": 60.174510592506046,
+        "stdev": 0.46196340884443193
+      },
+      "ttft_ms": {
+        "max": 63.23384493589401,
+        "mean": 62.72482251127561,
+        "min": 62.29885853827,
+        "stdev": 0.47299463075569814
+      }
+    },
+    {
+      "context_length": 1984,
+      "mode": "kv_cache",
+      "peak_memory_bytes": {
+        "max": 8207638528,
+        "mean": 8207638528.0,
+        "min": 8207638528,
+        "stdev": 0.0
+      },
+      "repeats": 3,
+      "tpot_ms": {
+        "max": 15.437868142884874,
+        "mean": 15.425948869614373,
+        "min": 15.4113086265704,
+        "stdev": 0.013487206311754442
+      },
+      "ttft_ms": {
+        "max": 46.8970462679863,
+        "mean": 46.85488281150659,
+        "min": 46.833617612719536,
+        "stdev": 0.03651508535083664
+      }
+    },
+    {
+      "context_length": 1984,
+      "mode": "naive",
+      "peak_memory_bytes": {
+        "max": 8159224320,
+        "mean": 8159224320.0,
+        "min": 8159224320,
+        "stdev": 0.0
+      },
+      "repeats": 3,
+      "tpot_ms": {
+        "max": 47.69761044354666,
+        "mean": 42.9590567946434,
+        "min": 40.546836183657724,
+        "stdev": 4.103932526425435
+      },
+      "ttft_ms": {
+        "max": 77.44108326733112,
+        "mean": 54.866683358947434,
+        "min": 43.55953633785248,
+        "stdev": 19.550013971943937
+      }
+    }
+  ],
+  "benchmark": "kv_cache_inference",
+  "checkpoint": {
+    "bytes": 5200509196,
+    "model_tag": "d26",
+    "path": "/root/autodl-tmp/nanochat-data/chatsft_checkpoints/d26/model_000747.pt",
+    "sha256": "29243bd0d986a21ed9725fdcb2c0b6ebedf3cfc14af40b6acfbdab70e3acd56f",
+    "source": "sft",
+    "step": 747
+  },
+  "command": [
+    "/root/nanochat-venv/bin/python",
+    "/root/autodl-tmp/Nanochat/benchmarks/benchmark_kv_cache.py",
+    "--source=sft",
+    "--model-tag=d26",
+    "--step=747",
+    "--device-type=cuda",
+    "--dtype=bfloat16",
+    "--context-lengths=128,512,1024,1536,1984",
+    "--new-tokens=64",
+    "--warmup=1",
+    "--repeats=3",
+    "--output=benchmark_results/kv_cache_sft_d26_a800_v3.json"
+  ],
+  "comparisons": [
+    {
+      "context_length": 128,
+      "outputs_match": true,
+      "peak_memory_ratio": 0.9960638217612943,
+      "tpot_speedup": 0.648106963343523,
+      "ttft_speedup": 0.6123299305284932
+    },
+    {
+      "context_length": 512,
+      "outputs_match": true,
+      "peak_memory_ratio": 0.998386078653321,
+      "tpot_speedup": 1.1114769879793682,
+      "ttft_speedup": 0.6494076017783689
+    },
+    {
+      "context_length": 1024,
+      "outputs_match": true,
+      "peak_memory_ratio": 1.0012317267928441,
+      "tpot_speedup": 1.9598734305119763,
+      "ttft_speedup": 0.8183472147672944
+    },
+    {
+      "context_length": 1536,
+      "outputs_match": true,
+      "peak_memory_ratio": 1.0039161452048222,
+      "tpot_speedup": 2.612072717011354,
+      "ttft_speedup": 0.890641455919086
+    },
+    {
+      "context_length": 1984,
+      "outputs_match": true,
+      "peak_memory_ratio": 1.0059336777739185,
+      "tpot_speedup": 2.784856682577434,
+      "ttft_speedup": 1.1709917956613332
+    }
+  ],
+  "config": {
+    "context_lengths": "128,512,1024,1536,1984",
+    "device_type": "cuda",
+    "dtype": "bfloat16",
+    "model_tag": "d26",
+    "new_tokens": 64,
+    "repeats": 3,
+    "source": "sft",
+    "step": 747,
+    "warmup": 1
+  },
+  "cuda_version": "12.8",
+  "device": "cuda",
+  "device_capability": [
+    8,
+    0
+  ],
+  "device_memory_bytes": 85093777408,
+  "device_name": "NVIDIA A800-SXM4-80GB",
+  "dtype": "bfloat16",
+  "model_parameters": 1681790292,
+  "outputs_match": true,
+  "provenance": {
+    "config_sha256": "96be718ddb8c98e1ab4ae9c5eb62a78a91d9124f34bd2f48353147d88c6b7fd7",
+    "created_at_utc": "2026-07-29T10:45:06.268847+00:00",
+    "git": {
+      "branch": "main",
+      "commit": "e283e50cae9998c4d04a21bf478aa6b16004161b",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dirty": false,
+      "working_tree_sha256": "b7ea81faa704840e5a21ada9cd080de05e6ccdaa1e87a0339f4ff69e1610dee2"
+    },
+    "runtime": {
+      "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+      "python": "3.10.20"
+    },
+    "schema_version": 1
+  },
+  "results": [
+    {
+      "context_length": 128,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "b0bacd28c72b75181789baae3db2ab67b15673a451146df24266010a99a94cf2",
+      "peak_memory_bytes": 7152976896,
+      "repeat": 0,
+      "tpot_ms": 14.91588153063305,
+      "ttft_ms": 20.354196429252625
+    },
+    {
+      "context_length": 128,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "b0bacd28c72b75181789baae3db2ab67b15673a451146df24266010a99a94cf2",
+      "peak_memory_bytes": 7152976896,
+      "repeat": 1,
+      "tpot_ms": 14.97364023493396,
+      "ttft_ms": 18.062205985188484
+    },
+    {
+      "context_length": 128,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "b0bacd28c72b75181789baae3db2ab67b15673a451146df24266010a99a94cf2",
+      "peak_memory_bytes": 7152976896,
+      "repeat": 2,
+      "tpot_ms": 15.027414977787034,
+      "ttft_ms": 18.930500373244286
+    },
+    {
+      "context_length": 128,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "b0bacd28c72b75181789baae3db2ab67b15673a451146df24266010a99a94cf2",
+      "peak_memory_bytes": 7124821504,
+      "repeat": 0,
+      "tpot_ms": 23.04226089091528,
+      "ttft_ms": 30.805759131908417
+    },
+    {
+      "context_length": 128,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "b0bacd28c72b75181789baae3db2ab67b15673a451146df24266010a99a94cf2",
+      "peak_memory_bytes": 7124821504,
+      "repeat": 1,
+      "tpot_ms": 23.239903211120573,
+      "ttft_ms": 32.3360338807106
+    },
+    {
+      "context_length": 128,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "b0bacd28c72b75181789baae3db2ab67b15673a451146df24266010a99a94cf2",
+      "peak_memory_bytes": 7124821504,
+      "repeat": 2,
+      "tpot_ms": 23.02265637332485,
+      "ttft_ms": 30.511807650327682
+    },
+    {
+      "context_length": 512,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "8caec061d0a4a9d8c91f1358c0fa721c22a911852c3b0c59a758f2749734eccb",
+      "peak_memory_bytes": 7358375936,
+      "repeat": 0,
+      "tpot_ms": 25.626558366985545,
+      "ttft_ms": 25.48513375222683
+    },
+    {
+      "context_length": 512,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "8caec061d0a4a9d8c91f1358c0fa721c22a911852c3b0c59a758f2749734eccb",
+      "peak_memory_bytes": 7358375936,
+      "repeat": 1,
+      "tpot_ms": 25.649843589654044,
+      "ttft_ms": 23.438338190317154
+    },
+    {
+      "context_length": 512,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "8caec061d0a4a9d8c91f1358c0fa721c22a911852c3b0c59a758f2749734eccb",
+      "peak_memory_bytes": 7358375936,
+      "repeat": 2,
+      "tpot_ms": 25.695088422960705,
+      "ttft_ms": 24.889150634407997
+    },
+    {
+      "context_length": 512,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "8caec061d0a4a9d8c91f1358c0fa721c22a911852c3b0c59a758f2749734eccb",
+      "peak_memory_bytes": 7346500096,
+      "repeat": 0,
+      "tpot_ms": 23.005388972778167,
+      "ttft_ms": 38.05573843419552
+    },
+    {
+      "context_length": 512,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "8caec061d0a4a9d8c91f1358c0fa721c22a911852c3b0c59a758f2749734eccb",
+      "peak_memory_bytes": 7346500096,
+      "repeat": 1,
+      "tpot_ms": 23.041889781043643,
+      "ttft_ms": 37.98346035182476
+    },
+    {
+      "context_length": 512,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "8caec061d0a4a9d8c91f1358c0fa721c22a911852c3b0c59a758f2749734eccb",
+      "peak_memory_bytes": 7346500096,
+      "repeat": 2,
+      "tpot_ms": 23.204258805702604,
+      "ttft_ms": 37.62227110564709
+    },
+    {
+      "context_length": 1024,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 7634732032,
+      "repeat": 0,
+      "tpot_ms": 45.600193212666206,
+      "ttft_ms": 40.166882798075676
+    },
+    {
+      "context_length": 1024,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 7634732032,
+      "repeat": 1,
+      "tpot_ms": 44.85075959255771,
+      "ttft_ms": 39.489440619945526
+    },
+    {
+      "context_length": 1024,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 7634732032,
+      "repeat": 2,
+      "tpot_ms": 45.56327191964975,
+      "ttft_ms": 39.80949707329273
+    },
+    {
+      "context_length": 1024,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 7644135936,
+      "repeat": 0,
+      "tpot_ms": 23.063887945479816,
+      "ttft_ms": 48.56220819056034
+    },
+    {
+      "context_length": 1024,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 7644135936,
+      "repeat": 1,
+      "tpot_ms": 23.22401694716915,
+      "ttft_ms": 48.41774329543114
+    },
+    {
+      "context_length": 1024,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 7644135936,
+      "repeat": 2,
+      "tpot_ms": 23.111589282514558,
+      "ttft_ms": 49.004318192601204
+    },
+    {
+      "context_length": 1536,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "7d07774e62f6b453729f289df817d9c421f494d8797d92b4a8c9bfb7c3404b0d",
+      "peak_memory_bytes": 7905243136,
+      "repeat": 0,
+      "tpot_ms": 60.174510592506046,
+      "ttft_ms": 63.23384493589401
+    },
+    {
+      "context_length": 1536,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "7d07774e62f6b453729f289df817d9c421f494d8797d92b4a8c9bfb7c3404b0d",
+      "peak_memory_bytes": 7905243136,
+      "repeat": 1,
+      "tpot_ms": 60.91488469096403,
+      "ttft_ms": 62.64176405966282
+    },
+    {
+      "context_length": 1536,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "7d07774e62f6b453729f289df817d9c421f494d8797d92b4a8c9bfb7c3404b0d",
+      "peak_memory_bytes": 7905243136,
+      "repeat": 2,
+      "tpot_ms": 61.023357457348276,
+      "ttft_ms": 62.29885853827
+    },
+    {
+      "context_length": 1536,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "7d07774e62f6b453729f289df817d9c421f494d8797d92b4a8c9bfb7c3404b0d",
+      "peak_memory_bytes": 7936201216,
+      "repeat": 0,
+      "tpot_ms": 23.17741232377196,
+      "ttft_ms": 70.32186537981033
+    },
+    {
+      "context_length": 1536,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "7d07774e62f6b453729f289df817d9c421f494d8797d92b4a8c9bfb7c3404b0d",
+      "peak_memory_bytes": 7936201216,
+      "repeat": 1,
+      "tpot_ms": 23.400085963427074,
+      "ttft_ms": 70.4172533005476
+    },
+    {
+      "context_length": 1536,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "7d07774e62f6b453729f289df817d9c421f494d8797d92b4a8c9bfb7c3404b0d",
+      "peak_memory_bytes": 7936201216,
+      "repeat": 2,
+      "tpot_ms": 23.142135302935326,
+      "ttft_ms": 70.54059021174908
+    },
+    {
+      "context_length": 1984,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 8159224320,
+      "repeat": 0,
+      "tpot_ms": 47.69761044354666,
+      "ttft_ms": 77.44108326733112
+    },
+    {
+      "context_length": 1984,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 8159224320,
+      "repeat": 1,
+      "tpot_ms": 40.632723756725824,
+      "ttft_ms": 43.59943047165871
+    },
+    {
+      "context_length": 1984,
+      "generated_tokens": 64,
+      "mode": "naive",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 8159224320,
+      "repeat": 2,
+      "tpot_ms": 40.546836183657724,
+      "ttft_ms": 43.55953633785248
+    },
+    {
+      "context_length": 1984,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 8207638528,
+      "repeat": 0,
+      "tpot_ms": 15.4113086265704,
+      "ttft_ms": 46.833617612719536
+    },
+    {
+      "context_length": 1984,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 8207638528,
+      "repeat": 1,
+      "tpot_ms": 15.437868142884874,
+      "ttft_ms": 46.8970462679863
+    },
+    {
+      "context_length": 1984,
+      "generated_tokens": 64,
+      "mode": "kv_cache",
+      "output_token_sha256": "4d02f87bb1615e7bb2081005523a701ab66b8a928ec495ccfaadc62f4904ed26",
+      "peak_memory_bytes": 8207638528,
+      "repeat": 2,
+      "tpot_ms": 15.428669839387847,
+      "ttft_ms": 46.833984553813934
+    }
+  ],
+  "schema_version": 3,
+  "torch_version": "2.9.1+cu128"
+}

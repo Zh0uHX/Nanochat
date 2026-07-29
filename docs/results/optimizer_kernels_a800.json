@@ -1,0 +1,122 @@
+{
+  "benchmark": "adamw_optimizer_kernel",
+  "command": [
+    "/root/nanochat-venv/bin/python",
+    "/root/autodl-tmp/Nanochat/benchmarks/benchmark_optimizer_kernels.py",
+    "--output=benchmark_results/optimizer_kernels_a800_event.json"
+  ],
+  "compiled": {
+    "max_ms": 3.0074880123138428,
+    "mean_ms": 0.833986554145813,
+    "median_ms": 0.4536319971084595,
+    "min_ms": 0.43827199935913086,
+    "p10_ms": 0.4485119879245758,
+    "p90_ms": 2.741555166244509,
+    "round_medians_ms": [
+      0.4505600035190582,
+      0.4541440010070801,
+      0.4551680088043213,
+      0.4536319971084595,
+      0.4541440010070801
+    ],
+    "samples": 100,
+    "stdev_ms": 0.8495411301289048
+  },
+  "compiled_speedup": 4.137697515150416,
+  "config": {
+    "columns": 1664,
+    "parity_atol": 0.03125,
+    "parity_rtol": 0.01,
+    "parity_steps": 5,
+    "repeats": 20,
+    "rounds": 5,
+    "rows": 32768,
+    "seed": 7,
+    "warmup": 10
+  },
+  "cuda_version": "12.8",
+  "device": "NVIDIA A800-SXM4-80GB",
+  "device_capability": [
+    8,
+    0
+  ],
+  "device_memory_bytes": 85093777408,
+  "eager": {
+    "max_ms": 4.05401611328125,
+    "mean_ms": 2.4311910390853884,
+    "median_ms": 1.8769919872283936,
+    "min_ms": 1.381376028060913,
+    "p10_ms": 1.3905919790267944,
+    "p90_ms": 3.994726300239563,
+    "round_medians_ms": [
+      3.9864320755004883,
+      1.401856005191803,
+      1.8826239705085754,
+      1.8575360178947449,
+      3.961344003677368
+    ],
+    "samples": 100,
+    "stdev_ms": 1.130368632137464
+  },
+  "parity": {
+    "atol": 0.03125,
+    "max_abs": 0.03125,
+    "max_rel": 128.64102172851562,
+    "rtol": 0.01,
+    "steps": 5,
+    "tensors": {
+      "first_moment": {
+        "max_abs": 0.0,
+        "max_rel": 0.0,
+        "mean_abs": 0.0,
+        "relative_l2": 0.0,
+        "within_tolerance": true
+      },
+      "gradient": {
+        "max_abs": 0.0,
+        "max_rel": 0.0,
+        "mean_abs": 0.0,
+        "relative_l2": 0.0,
+        "within_tolerance": true
+      },
+      "parameter": {
+        "max_abs": 0.00018310546875,
+        "max_rel": 128.64102172851562,
+        "mean_abs": 5.494262111938042e-08,
+        "relative_l2": 1.5459983160326374e-06,
+        "within_tolerance": true
+      },
+      "second_moment": {
+        "max_abs": 0.03125,
+        "max_rel": 0.007874015718698502,
+        "mean_abs": 0.0003416196268517524,
+        "relative_l2": 0.0029973092023283243,
+        "within_tolerance": true
+      }
+    },
+    "within_tolerance": true
+  },
+  "provenance": {
+    "config_sha256": "a8f8758f4e089a896388c6a1013d8b16189ed96bfbc26b80fea12faf609e1601",
+    "created_at_utc": "2026-07-29T10:36:01.581162+00:00",
+    "git": {
+      "branch": "main",
+      "commit": "d9223c09526ef91309204ddb2e6812d9d997b0ab",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dirty": false,
+      "working_tree_sha256": "aada03fcae5281786b291d4da1560a7343b48c6ac38a72edcd55c82ffc629d9f"
+    },
+    "runtime": {
+      "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+      "python": "3.10.20"
+    },
+    "schema_version": 1
+  },
+  "schema_version": 3,
+  "shape": [
+    32768,
+    1664
+  ],
+  "timer": "torch.cuda.Event",
+  "torch_version": "2.9.1+cu128"
+}

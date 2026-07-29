@@ -1,0 +1,71 @@
+{
+  "accepted": true,
+  "benchmark": "exact_resume_integration",
+  "command": [
+    "/root/nanochat-venv/bin/python",
+    "/root/autodl-tmp/Nanochat/benchmarks/benchmark_exact_resume.py",
+    "--steps=8",
+    "--split-step=3",
+    "--output=benchmark_results/exact_resume_2x_a800.json"
+  ],
+  "config": {
+    "batch_size": 2,
+    "buffer_size": 8,
+    "cublas_workspace_config": ":4096:8",
+    "dataset_size": 64,
+    "device": "cuda",
+    "hidden_size": 64,
+    "learning_rate": 0.001,
+    "seed": 2026,
+    "sequence_len": 31,
+    "split_step": 3,
+    "steps": 8,
+    "vocab_size": 128,
+    "world_size": 2
+  },
+  "cuda_version": "12.8",
+  "device_names": [
+    "NVIDIA A800-SXM4-80GB",
+    "NVIDIA A800-SXM4-80GB"
+  ],
+  "provenance": {
+    "config_sha256": "f80d75c6f5f0a6e3b44e42e852b83c1e4958afb01efe716bd377d33e079abd2f",
+    "created_at_utc": "2026-07-29T10:31:05.221425+00:00",
+    "git": {
+      "branch": "main",
+      "commit": "2bd072ed7e1066f706d8767582f2707edfc23e3e",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dirty": false,
+      "working_tree_sha256": "102e60041fe43953d712012790e9603b6280371b7830e9fcfc10e25a525847f5"
+    },
+    "runtime": {
+      "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+      "python": "3.10.20"
+    },
+    "schema_version": 1
+  },
+  "rank_results": [
+    {
+      "accepted": true,
+      "batch_replay_exact": true,
+      "local_rank": 0,
+      "max_loss_abs": 0.0,
+      "max_optimizer_state_abs": 0.0,
+      "max_parameter_abs": 0.0,
+      "packer_state_exact": true,
+      "rank": 0
+    },
+    {
+      "accepted": true,
+      "batch_replay_exact": true,
+      "local_rank": 1,
+      "max_loss_abs": 0.0,
+      "max_optimizer_state_abs": 0.0,
+      "max_parameter_abs": 0.0,
+      "packer_state_exact": true,
+      "rank": 1
+    }
+  ],
+  "schema_version": 1,
+  "torch_version": "2.9.1+cu128"
+}

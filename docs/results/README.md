@@ -20,3 +20,14 @@ commit, config hash, checkpoint checksum, hardware, command, and raw metrics.
   2×A800 reevaluation of the available historical base checkpoint. The JSON
   records the checkpoint/tokenizer hashes, exact command, clean evaluation
   commit, BPB, and aggregate CORE score; the CSV contains every task result.
+- `exact_resume_2x_a800.json`: two-rank A800 acceptance test of the production
+  checkpoint/data path. Continuous and interrupted/resumed execution match
+  exactly for batches, losses, parameters, optimizer tensors, and packer state
+  on both ranks.
+- `optimizer_kernels_a800.json`: one-A800 AdamW compiled/eager microbenchmark
+  using five AB/BA-ordered rounds and CUDA Event timing, plus five-step BF16
+  parity. It does not measure end-to-end training throughput.
+- `kv_cache_sft_d26_a800.json`: one-A800 naive/KV-cache crossover benchmark on
+  the verified step-747 SFT checkpoint. It records per-repeat output hashes,
+  TTFT, TPOT, peak memory, checkpoint SHA-256, and clean-tree provenance. KV
+  Cache is an upstream capability, not original work in this fork.

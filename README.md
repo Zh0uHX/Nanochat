@@ -15,9 +15,11 @@ compatibility, provenance, and reproducible benchmarking**.
 - Large datasets, optimizer states, and model weights are excluded from Git.
 - A historical 1.68B run is documented, but it predates the exact-resume
   refactor and is not presented as a validation of the new implementation.
-- The CPU packing microbenchmark has been executed with three seeds; end-to-end
-  GPU performance remains intentionally unclaimed until the remaining protocols
-  in [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) are executed.
+- The CPU packing, two-rank exact-resume, optimizer-kernel, checkpoint
+  reevaluation, and KV-cache crossover benchmarks are reviewed and published.
+- End-to-end GPU SFT packing throughput and quality remain intentionally
+  unclaimed until the controlled ablation in
+  [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) is executed.
 
 ## Verified historical run
 
@@ -61,6 +63,38 @@ packer behavior; it is not evidence of end-to-end GPU training speedup or
 unchanged model quality. The reviewed raw result includes the clean Git commit,
 working-tree hash, configuration hash, and per-seed measurements:
 [packing_cpu_2026_07.json](docs/results/packing_cpu_2026_07.json).
+
+## Reviewed A800 systems results
+
+The exact-resume acceptance test interrupted a deterministic two-rank CUDA run
+at step 3 of 8, saved the production model/optimizer/packer checkpoint, and
+resumed it. On both A800 ranks, the replayed batches, final packer states,
+losses, model parameters, and optimizer tensors matched the uninterrupted run
+exactly (all maximum absolute differences `0.0`). See
+[exact_resume_2x_a800.json](docs/results/exact_resume_2x_a800.json).
+
+The AdamW microbenchmark used five AB/BA-ordered rounds of 20 CUDA Event samples
+on a `32768 × 1664` BF16 tensor. The compiled path had 0.454 ms median latency
+versus 1.877 ms for eager, a 4.14× median kernel speedup. Five-step BF16 parity
+passed at `atol=0.03125`, `rtol=0.01`; parameter relative L2 difference was
+`1.55e-6`. This is a kernel microbenchmark, not an end-to-end training speedup.
+See [optimizer_kernels_a800.json](docs/results/optimizer_kernels_a800.json).
+
+The existing step-747 SFT checkpoint was also used to characterize the
+**upstream** KV-cache implementation against naive full-prefix decoding:
+
+| Context | Naive TPOT | Cached TPOT | TPOT speedup |
+|---:|---:|---:|---:|
+| 128 | 14.97 ms | 23.10 ms | 0.65× |
+| 512 | 25.66 ms | 23.08 ms | 1.11× |
+| 1,024 | 45.34 ms | 23.13 ms | 1.96× |
+| 1,536 | 60.70 ms | 23.24 ms | 2.61× |
+| 1,984 | 42.96 ms | 15.43 ms | 2.78× |
+
+All greedy output-token hashes matched across modes and repeats. The result
+also shows the boundary: cache management regresses short-context TPOT and
+usually increases TTFT, so no context-independent acceleration is claimed. See
+[kv_cache_sft_d26_a800.json](docs/results/kv_cache_sft_d26_a800.json).
 
 ## Original work in this fork
 

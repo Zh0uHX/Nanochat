@@ -46,6 +46,11 @@ BASE_MODEL_TAG=<tag> ABLATION_STEPS=200 NPROC_PER_NODE=8 \
 
 Goal: determine the cost of the eager workaround and verify numerical parity.
 
+Status: complete on one NVIDIA A800-SXM4-80GB. Across five AB/BA-ordered rounds
+of 20 CUDA Event samples, compiled/eager median latency was 0.454/1.877 ms
+(4.14×). Five-step BF16 parity passed at the recorded tolerance. See
+[`docs/results/optimizer_kernels_a800.json`](results/optimizer_kernels_a800.json).
+
 ```bash
 python -m benchmarks.benchmark_optimizer_kernels \
   --parity-steps=5 \
@@ -65,10 +70,16 @@ eager path as “fused”.
 Goal: quantify an upstream capability on the project’s trained checkpoint
 without presenting it as an original implementation.
 
+Status: complete on the verified step-747 SFT checkpoint. Greedy output hashes
+matched for every mode/repeat. Cached TPOT was 0.65× at context 128 and crossed
+over to 1.96×/2.61×/2.78× at contexts 1,024/1,536/1,984. See
+[`docs/results/kv_cache_sft_d26_a800.json`](results/kv_cache_sft_d26_a800.json).
+
 ```bash
 python -m benchmarks.benchmark_kv_cache \
   --source=sft --model-tag=<tag> \
-  --context-lengths=128,512,1024 --new-tokens=64 --warmup=1 --repeats=3 \
+  --context-lengths=128,512,1024,1536,1984 \
+  --new-tokens=64 --warmup=1 --repeats=3 \
   --output=benchmark_results/kv_cache.json
 ```
 
@@ -80,6 +91,11 @@ hardware. Compare cached decoding with the model’s naive full-prefix generatio
 The executable acceptance test uses a tiny deterministic language model while
 exercising the production SFT packer, atomic model/optimizer checkpoint helpers,
 rank-local packer state, completion marker, and reload path:
+
+Status: accepted on 2×A800. Both ranks reproduced batches and packer state
+exactly, with zero maximum absolute difference in losses, model parameters, and
+optimizer state. See
+[`docs/results/exact_resume_2x_a800.json`](results/exact_resume_2x_a800.json).
 
 ```bash
 CUBLAS_WORKSPACE_CONFIG=:4096:8 \

@@ -50,6 +50,25 @@ completed deterministic generation. See
 [`docs/results/legacy_2026_02.json`](docs/results/legacy_2026_02.json) for the
 machine-readable manifest.
 
+## Verified runtime evidence
+
+- A two-rank A800 interruption/resume acceptance test reproduced input batches,
+  losses, final model parameters, optimizer state, and packer state exactly on
+  both ranks:
+  [`exact_resume_2x_a800.json`](docs/results/exact_resume_2x_a800.json).
+- On one A800, the fork's compiled AdamW kernel measured 0.454 ms median versus
+  1.877 ms eager across 100 CUDA Event samples (4.14×), with five-step BF16
+  parity accepted at the recorded tolerance:
+  [`optimizer_kernels_a800.json`](docs/results/optimizer_kernels_a800.json).
+- On the same SFT checkpoint, upstream cached and naive greedy decoding produced
+  identical output hashes. Cached TPOT crossed over from 0.65× at context 128
+  to 1.96×/2.61×/2.78× at contexts 1,024/1,536/1,984:
+  [`kv_cache_sft_d26_a800.json`](docs/results/kv_cache_sft_d26_a800.json).
+
+These are systems/checkpoint measurements, not safety or model-quality
+evaluations. The optimizer number is not an end-to-end training speedup, and
+the KV-cache implementation is inherited from upstream.
+
 ## Intended use
 
 - education and LLM systems research;
