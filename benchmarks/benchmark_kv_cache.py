@@ -45,9 +45,17 @@ def synchronize(device_type):
 def timed_generation(generator, device_type):
     start = time.perf_counter()
     timestamps = []
-    for _ in generator:
+    generated_token_ids = []
+    for output in generator:
         synchronize(device_type)
         timestamps.append(time.perf_counter())
+        if isinstance(output, tuple):
+            token_column, _ = output
+            if len(token_column) != 1:
+                raise ValueError("benchmark expects a single generated sample")
+            generated_token_ids.append(int(token_column[0]))
+        else:
+            generated_token_ids.append(int(output))
     if not timestamps:
         raise RuntimeError("generator emitted no tokens")
     time_to_first_token = timestamps[0] - start
@@ -58,6 +66,9 @@ def timed_generation(generator, device_type):
         "ttft_ms": 1000 * time_to_first_token,
         "tpot_ms": 1000 * statistics.mean(inter_token) if inter_token else 0.0,
         "generated_tokens": len(timestamps),
+        "output_token_sha256": hashlib.sha256(
+            json.dumps(generated_token_ids).encode("utf-8")
+        ).hexdigest(),
     }
 
 
@@ -124,6 +135,45 @@ def aggregate_results(results):
             }
         )
     return aggregate
+
+
+def compare_modes(aggregate, results):
+    comparisons = []
+    context_lengths = sorted({row["context_length"] for row in aggregate})
+    for context_length in context_lengths:
+        modes = {
+            row["mode"]: row
+            for row in aggregate
+            if row["context_length"] == context_length
+        }
+        naive = modes["naive"]
+        cached = modes["kv_cache"]
+        output_pairs = []
+        for repeat in range(naive["repeats"]):
+            digests = {
+                row["mode"]: row["output_token_sha256"]
+                for row in results
+                if row["context_length"] == context_length
+                and row["repeat"] == repeat
+            }
+            output_pairs.append(digests["naive"] == digests["kv_cache"])
+        comparisons.append(
+            {
+                "context_length": context_length,
+                "outputs_match": all(output_pairs),
+                "tpot_speedup": (
+                    naive["tpot_ms"]["mean"] / cached["tpot_ms"]["mean"]
+                ),
+                "ttft_speedup": (
+                    naive["ttft_ms"]["mean"] / cached["ttft_ms"]["mean"]
+                ),
+                "peak_memory_ratio": (
+                    cached["peak_memory_bytes"]["mean"]
+                    / naive["peak_memory_bytes"]["mean"]
+                ),
+            }
+        )
+    return comparisons
 
 
 def main():
@@ -229,8 +279,10 @@ def main():
     properties = (
         torch.cuda.get_device_properties(0) if device_type == "cuda" else None
     )
+    aggregate = aggregate_results(results)
+    comparisons = compare_modes(aggregate, results)
     payload = {
-        "schema_version": 2,
+        "schema_version": 3,
         "benchmark": "kv_cache_inference",
         "config": config,
         "command": [sys.executable, *sys.argv],
@@ -259,7 +311,9 @@ def main():
         "torch_version": torch.__version__,
         "cuda_version": torch.version.cuda,
         "dtype": args.dtype,
-        "aggregate": aggregate_results(results),
+        "aggregate": aggregate,
+        "comparisons": comparisons,
+        "outputs_match": all(row["outputs_match"] for row in comparisons),
         "results": results,
     }
     rendered = json.dumps(payload, indent=2, sort_keys=True)
