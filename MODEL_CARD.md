@@ -28,6 +28,12 @@ archived base evaluation names step 169150 while the available base checkpoint
 is step 14889; therefore its CORE/BPB values are excluded from verified model
 quality claims.
 
+The available step-14,889 checkpoint was reevaluated on 2×A800 with clean
+commit `c626a2a`: train BPB 0.745902, validation BPB 0.745270, and CORE 0.267987
+with at most 500 deterministically shuffled examples per task. The full task
+table and command are published in
+[`docs/results/base_model_014889_a800.json`](docs/results/base_model_014889_a800.json).
+
 ## Verified artifact identities
 
 The local archive and A800 copies were compared byte-for-byte with SHA-256:

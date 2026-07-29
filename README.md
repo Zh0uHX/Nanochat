@@ -30,12 +30,17 @@ compatibility, provenance, and reproducible benchmarking**.
 | Precision | BF16 |
 | Wall time | 701.81 min |
 | MFU | 45.86% |
+| Re-evaluated CORE (step 14,889) | 0.2680 |
+| Re-evaluated validation BPB | 0.7453 |
 | SFT steps | 747 |
 | SFT validation BPB | 0.3245 |
 
 The archived evaluation report references a different checkpoint step
-(169150 versus the available 14889), so its CORE/BPB values are excluded.
-See [the legacy manifest](docs/results/legacy_2026_02.json) and
+(169150 versus the available 14889), so its CORE/BPB values are excluded. The
+available checkpoint was reevaluated on 2×A800 using at most 500 examples per
+CORE task; see
+[the reviewed result](docs/results/base_model_014889_a800.json),
+[the legacy manifest](docs/results/legacy_2026_02.json), and
 [MODEL_CARD.md](MODEL_CARD.md).
 
 ## Reviewed packing result
@@ -218,6 +223,7 @@ python -m benchmarks.benchmark_optimizer_kernels \
 Two-rank exact-resume acceptance test:
 
 ```bash
+CUBLAS_WORKSPACE_CONFIG=:4096:8 \
 torchrun --standalone --nproc_per_node=2 \
   -m benchmarks.benchmark_exact_resume \
   --output=benchmark_results/exact_resume_2x.json

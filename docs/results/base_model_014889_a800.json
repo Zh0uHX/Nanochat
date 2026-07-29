@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "status": "reviewed_reevaluation_of_existing_checkpoint",
+  "created_at_utc": "2026-07-29T10:22:22+00:00",
+  "command": [
+    "/root/nanochat-venv/bin/python",
+    "-m",
+    "torch.distributed.run",
+    "--standalone",
+    "--nproc_per_node=2",
+    "-m",
+    "scripts.base_eval",
+    "--",
+    "--model-tag=d26",
+    "--step=14889",
+    "--eval=core,bpb,sample",
+    "--max-per-task=500",
+    "--device-batch-size=16",
+    "--split-tokens=20971520"
+  ],
+  "config": {
+    "world_size": 2,
+    "max_per_core_task": 500,
+    "device_batch_size": 16,
+    "split_tokens_per_train_val_split": 20971520,
+    "evaluation_config_sha256": "8310eddc192ce9f1a6ff4bf45d5d1ff59f16736a85442e18a1fa802f191fe4d0"
+  },
+  "environment": {
+    "gpus": "2x NVIDIA A800-SXM4-80GB",
+    "python": "3.10.20",
+    "pytorch": "2.9.1+cu128",
+    "cuda": "12.8",
+    "precision": "BF16 autocast"
+  },
+  "provenance": {
+    "git_commit": "c626a2a47faa7488e7db55a7592c8410880fd18c",
+    "git_dirty": false
+  },
+  "checkpoint": {
+    "step": 14889,
+    "parameters": 1681790292,
+    "bytes": 5200509259,
+    "sha256": "e9bb6f3bbe483e8bc603df389ac96e7c4dac97ac3ef7862a1c7f76759d8e3f7a",
+    "checkpoint_provenance_available": false
+  },
+  "tokenizer": {
+    "vocab_size": 32768,
+    "tokenizer_pickle_sha256": "c3945190ac5c38a6ac941480e21895763775619e756cde4d108cafb5a081e185",
+    "token_bytes_sha256": "a9b173c3e103bae4c1e2a17f602d563c85596a0e580201fea8b0e9c54c054dcb"
+  },
+  "metrics": {
+    "train_bpb": 0.745902,
+    "validation_bpb": 0.745270,
+    "core": 0.267987
+  },
+  "raw_task_results": "base_model_014889_a800.csv",
+  "notes": [
+    "This evaluates the available step-14889 checkpoint and supersedes no historical training metadata.",
+    "The archived step-169150 CORE/BPB report remains excluded because its checkpoint is unavailable.",
+    "CORE uses at most 500 deterministically shuffled examples per task; it is not a full-dataset score for tasks with more examples."
+  ]
+}

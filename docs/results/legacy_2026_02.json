@@ -37,6 +37,15 @@
     "method": "SHA-256 compared between the local archive and A800 copies; SFT checkpoint loaded with the runtime tokenizer and completed deterministic generation",
     "evaluation_commit": "c626a2a47faa7488e7db55a7592c8410880fd18c"
   },
+  "checkpoint_reevaluation": {
+    "result_file": "base_model_014889_a800.json",
+    "evaluation_commit": "c626a2a47faa7488e7db55a7592c8410880fd18c",
+    "hardware": "2x NVIDIA A800-SXM4-80GB",
+    "train_bpb": 0.745902,
+    "validation_bpb": 0.745270,
+    "core": 0.267987,
+    "max_per_core_task": 500
+  },
   "excluded_result": {
     "reason": "evaluation report identifies base_model step 169150, which does not match the archived base checkpoint step 14889",
     "reported_step": 169150,

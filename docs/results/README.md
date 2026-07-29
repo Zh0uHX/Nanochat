@@ -16,3 +16,7 @@ commit, config hash, checkpoint checksum, hardware, command, and raw metrics.
   sequence length 2,048. The embedded provenance points to clean commit
   `680413c9c402e745429aed012a5990273d3bfb52`. It does not measure GPU training
   throughput or model quality.
+- `base_model_014889_a800.json` and `base_model_014889_a800.csv`: reviewed
+  2×A800 reevaluation of the available historical base checkpoint. The JSON
+  records the checkpoint/tokenizer hashes, exact command, clean evaluation
+  commit, BPB, and aggregate CORE score; the CSV contains every task result.

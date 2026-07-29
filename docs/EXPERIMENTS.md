@@ -82,6 +82,7 @@ exercising the production SFT packer, atomic model/optimizer checkpoint helpers,
 rank-local packer state, completion marker, and reload path:
 
 ```bash
+CUBLAS_WORKSPACE_CONFIG=:4096:8 \
 torchrun --standalone --nproc_per_node=2 \
   -m benchmarks.benchmark_exact_resume \
   --steps=8 --split-step=3 \
@@ -98,3 +99,5 @@ It performs the following comparison:
 
 This is a checkpoint/data-path acceptance test, not a model-quality benchmark.
 The separate CPU unit tests continue to cover individual packer invariants.
+CUDA runs fail fast unless deterministic cuBLAS workspace configuration is set
+before process launch.

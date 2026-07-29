@@ -110,6 +110,18 @@ def setup_distributed(device_type):
     return rank, local_rank, world_size, device
 
 
+def validate_deterministic_environment(device_type):
+    """Fail before CUDA setup when exact cuBLAS reproducibility is unavailable."""
+    if device_type != "cuda":
+        return
+    workspace_config = os.environ.get("CUBLAS_WORKSPACE_CONFIG")
+    if workspace_config not in {":4096:8", ":16:8"}:
+        raise RuntimeError(
+            "CUDA exact-resume validation requires "
+            "CUBLAS_WORKSPACE_CONFIG=:4096:8 (or :16:8) to be set before launch"
+        )
+
+
 def barrier(world_size):
     if world_size > 1:
         dist.barrier()
@@ -238,6 +250,7 @@ def main():
     args = parse_args()
     if not 0 < args.split_step < args.steps:
         raise ValueError("--split-step must be between zero and --steps")
+    validate_deterministic_environment(args.device)
     rank, local_rank, world_size, device = setup_distributed(args.device)
     torch.use_deterministic_algorithms(True)
     config = {
@@ -253,6 +266,7 @@ def main():
         "seed": args.seed,
         "device": args.device,
         "world_size": world_size,
+        "cublas_workspace_config": os.environ.get("CUBLAS_WORKSPACE_CONFIG"),
     }
 
     baseline_model, baseline_optimizer, baseline_packer = make_training_objects(
