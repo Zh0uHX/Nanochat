@@ -1,12 +1,22 @@
 import pytest
 import torch
 
+from benchmarks.benchmark_optimizer_kernels import percentile, summarize_timings
 from nanochat.optim import (
     _adamw_step_compiled,
     _adamw_step_eager,
     _muon_step_compiled,
     _muon_step_eager,
 )
+
+
+def test_optimizer_benchmark_summary_preserves_rounds():
+    summary = summarize_timings([[1.0, 3.0], [2.0, 4.0]])
+
+    assert summary["samples"] == 4
+    assert summary["median_ms"] == 2.5
+    assert summary["round_medians_ms"] == [2.0, 3.0]
+    assert percentile([1.0, 2.0, 3.0], 0.5) == 2.0
 
 
 def adamw_inputs(device="cpu", dtype=torch.float32, shape=(8, 8)):

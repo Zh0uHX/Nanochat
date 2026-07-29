@@ -4,7 +4,6 @@ import argparse
 import json
 import statistics
 import sys
-import time
 
 import torch
 
@@ -16,8 +15,9 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--rows", type=int, default=32768)
     parser.add_argument("--columns", type=int, default=1664)
-    parser.add_argument("--warmup", type=int, default=5)
+    parser.add_argument("--warmup", type=int, default=10)
     parser.add_argument("--repeats", type=int, default=20)
+    parser.add_argument("--rounds", type=int, default=5)
     parser.add_argument("--parity-steps", type=int, default=5)
     parser.add_argument("--parity-atol", type=float, default=0.03125)
     parser.add_argument("--parity-rtol", type=float, default=0.01)
@@ -55,21 +55,50 @@ def clone_inputs(inputs):
     return tuple(value.clone() for value in inputs)
 
 
-def benchmark(function, args, seed):
+def benchmark_round(function, args, seed):
     inputs = make_inputs(args.rows, args.columns, seed)
     for _ in range(args.warmup):
         function(*inputs)
     torch.cuda.synchronize()
-    timings = []
-    for _ in range(args.repeats):
-        start = time.perf_counter()
+    starts = [
+        torch.cuda.Event(enable_timing=True) for _ in range(args.repeats)
+    ]
+    ends = [
+        torch.cuda.Event(enable_timing=True) for _ in range(args.repeats)
+    ]
+    for start, end in zip(starts, ends):
+        start.record()
         function(*inputs)
-        torch.cuda.synchronize()
-        timings.append(time.perf_counter() - start)
+        end.record()
+    torch.cuda.synchronize()
+    return [start.elapsed_time(end) for start, end in zip(starts, ends)]
+
+
+def percentile(values, fraction):
+    ordered = sorted(values)
+    position = fraction * (len(ordered) - 1)
+    lower = int(position)
+    upper = min(lower + 1, len(ordered) - 1)
+    weight = position - lower
+    return ordered[lower] * (1 - weight) + ordered[upper] * weight
+
+
+def summarize_timings(round_timings):
+    timings = [value for current_round in round_timings for value in current_round]
+    if not timings:
+        raise ValueError("at least one timing sample is required")
     return {
-        "median_ms": 1000 * statistics.median(timings),
-        "min_ms": 1000 * min(timings),
-        "max_ms": 1000 * max(timings),
+        "samples": len(timings),
+        "median_ms": statistics.median(timings),
+        "mean_ms": statistics.fmean(timings),
+        "stdev_ms": statistics.stdev(timings) if len(timings) > 1 else 0.0,
+        "p10_ms": percentile(timings, 0.10),
+        "p90_ms": percentile(timings, 0.90),
+        "min_ms": min(timings),
+        "max_ms": max(timings),
+        "round_medians_ms": [
+            statistics.median(current_round) for current_round in round_timings
+        ],
     }
 
 
@@ -126,19 +155,43 @@ def main():
     args = parse_args()
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required")
+    if args.warmup < 0 or args.repeats < 1 or args.rounds < 1:
+        raise ValueError(
+            "--warmup must be non-negative; --repeats/--rounds must be positive"
+        )
     config = {
         "rows": args.rows,
         "columns": args.columns,
         "warmup": args.warmup,
         "repeats": args.repeats,
+        "rounds": args.rounds,
         "parity_steps": args.parity_steps,
         "parity_atol": args.parity_atol,
         "parity_rtol": args.parity_rtol,
         "seed": args.seed,
     }
     properties = torch.cuda.get_device_properties(0)
+    round_timings = {"compiled": [], "eager": []}
+    functions = {
+        "compiled": _adamw_step_compiled,
+        "eager": _adamw_step_eager,
+    }
+    for round_index in range(args.rounds):
+        order = (
+            ("compiled", "eager")
+            if round_index % 2 == 0
+            else ("eager", "compiled")
+        )
+        for mode in order:
+            round_timings[mode].append(
+                benchmark_round(
+                    functions[mode],
+                    args,
+                    args.seed + round_index,
+                )
+            )
     results = {
-        "schema_version": 2,
+        "schema_version": 3,
         "benchmark": "adamw_optimizer_kernel",
         "config": config,
         "command": [sys.executable, *sys.argv],
@@ -149,9 +202,10 @@ def main():
         "torch_version": torch.__version__,
         "cuda_version": torch.version.cuda,
         "shape": [args.rows, args.columns],
+        "timer": "torch.cuda.Event",
         "parity": parity_check(args),
-        "compiled": benchmark(_adamw_step_compiled, args, args.seed),
-        "eager": benchmark(_adamw_step_eager, args, args.seed),
+        "compiled": summarize_timings(round_timings["compiled"]),
+        "eager": summarize_timings(round_timings["eager"]),
     }
     results["compiled_speedup"] = (
         results["eager"]["median_ms"] / results["compiled"]["median_ms"]
