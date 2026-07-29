@@ -11,6 +11,8 @@ Examples:
 import argparse
 from contextlib import nullcontext
 import os
+import statistics
+import sys
 import time
 
 os.environ["PYTORCH_ALLOC_CONF"] = "expandable_segments:True"
@@ -24,6 +26,7 @@ from nanochat.checkpoint_manager import (
     load_rank_state,
     mark_checkpoint_complete,
     save_checkpoint,
+    save_json_atomic,
     save_rank_state,
     validate_checkpoint_complete,
 )
@@ -39,7 +42,11 @@ from nanochat.common import (
 from nanochat.loss_eval import evaluate_bpb
 from nanochat.optim import set_optimizer_kernel_mode
 from nanochat.provenance import collect_run_provenance
-from nanochat.sft_packer import PackedBatch, StatefulDistributedSFTPacker
+from nanochat.sft_packer import (
+    PackedBatch,
+    PackerMetrics,
+    StatefulDistributedSFTPacker,
+)
 from nanochat.tokenizer import get_token_bytes
 from tasks.common import TaskMixture
 from tasks.customjson import CustomJSON
@@ -56,6 +63,7 @@ RESUME_CRITICAL_KEYS = (
     "device_batch_size",
     "total_batch_size",
     "packing_strategy",
+    "validation_packing_strategy",
     "packing_buffer_size",
     "packing_bucket_width",
     "oversize_policy",
@@ -121,11 +129,22 @@ def parse_args():
     parser.add_argument("--eval-tokens", type=int, default=20 * 524288)
     parser.add_argument("--save-every", type=int, default=-1)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--result-output",
+        default="",
+        help="optional rank-0 JSON summary for fixed-budget benchmark runs",
+    )
 
     parser.add_argument(
         "--packing-strategy",
         choices=["sequential", "first_fit", "best_fit", "length_bucket"],
         default="best_fit",
+    )
+    parser.add_argument(
+        "--validation-packing-strategy",
+        choices=["sequential", "first_fit", "best_fit", "length_bucket"],
+        default="best_fit",
+        help="fixed validation policy; keep constant across training ablations",
     )
     parser.add_argument("--packing-buffer-size", type=int, default=100)
     parser.add_argument("--packing-bucket-width", type=int, default=64)
@@ -159,7 +178,16 @@ def build_datasets(base_dir):
     return train_dataset, validation_dataset
 
 
-def build_packer(dataset, tokenizer, args, rank, world_size, dataset_id):
+def build_packer(
+    dataset,
+    tokenizer,
+    args,
+    rank,
+    world_size,
+    dataset_id,
+    *,
+    strategy=None,
+):
     return StatefulDistributedSFTPacker(
         dataset,
         tokenizer,
@@ -168,11 +196,43 @@ def build_packer(dataset, tokenizer, args, rank, world_size, dataset_id):
         rank=rank,
         world_size=world_size,
         buffer_size=args.packing_buffer_size,
-        strategy=args.packing_strategy,
+        strategy=args.packing_strategy if strategy is None else strategy,
         bucket_width=args.packing_bucket_width,
         oversize_policy=args.oversize_policy,
         dataset_id=dataset_id,
     )
+
+
+def aggregate_packer_summaries(summaries):
+    aggregate = PackerMetrics()
+    for field_name in PackerMetrics.__dataclass_fields__:
+        setattr(
+            aggregate,
+            field_name,
+            sum(int(summary[field_name]) for summary in summaries),
+        )
+    return aggregate.summary()
+
+
+def summarize_step_measurements(measurements):
+    if not measurements:
+        return {
+            "warmup_steps_excluded": 10,
+            "measured_steps": 0,
+        }
+    elapsed_ms = [row["elapsed_ms"] for row in measurements]
+    tokens_per_second = [row["tokens_per_second"] for row in measurements]
+    mfu = [row["mfu_percent"] for row in measurements]
+    return {
+        "warmup_steps_excluded": 10,
+        "measured_steps": len(measurements),
+        "elapsed_ms_mean": statistics.fmean(elapsed_ms),
+        "elapsed_ms_median": statistics.median(elapsed_ms),
+        "tokens_per_second_mean": statistics.fmean(tokens_per_second),
+        "tokens_per_second_median": statistics.median(tokens_per_second),
+        "mfu_percent_mean": statistics.fmean(mfu),
+        "mfu_percent_median": statistics.median(mfu),
+    }
 
 
 def batch_to_tensors(batch: PackedBatch, device, device_type):
@@ -402,6 +462,8 @@ def main():
 
     ema_beta = 0.9
     last_mfu = 0.0
+    debiased_loss = None
+    step_measurements = []
     while True:
         if args.num_iterations > 0:
             last_step = step >= args.num_iterations
@@ -425,6 +487,7 @@ def main():
                 rank=rank,
                 world_size=world_size,
                 dataset_id=VALIDATION_DATASET_ID,
+                strategy=args.validation_packing_strategy,
             )
             validation_loader = tensor_batch_iterator(
                 validation_packer, device=device, device_type=device_type
@@ -551,6 +614,14 @@ def main():
         last_mfu = 100 * flops_per_second / (gpu_peak_flops * world_size)
         if step > 10:
             total_training_time += elapsed
+            step_measurements.append(
+                {
+                    "step": step,
+                    "elapsed_ms": 1000 * elapsed,
+                    "tokens_per_second": tokens_per_second,
+                    "mfu_percent": last_mfu,
+                }
+            )
 
         packer_summary = train_packer.metrics.summary()
         print0(
@@ -579,10 +650,73 @@ def main():
                 }
             )
 
-    print0(f"Peak memory: {get_max_memory() / 1024 / 1024:.2f} MiB")
+    local_packer_summary = train_packer.metrics.summary()
+    if ddp:
+        rank_packer_summaries = [None] * world_size
+        torch.distributed.all_gather_object(
+            rank_packer_summaries,
+            local_packer_summary,
+        )
+    else:
+        rank_packer_summaries = [local_packer_summary]
+    global_packer_summary = aggregate_packer_summaries(rank_packer_summaries)
+
+    peak_memory_bytes = get_max_memory()
+    print0(f"Peak memory: {peak_memory_bytes / 1024 / 1024:.2f} MiB")
     print0(f"Training time: {total_training_time / 60:.2f} min")
     if validation_bpb is not None:
         print0(f"Minimum validation bpb: {min_validation_bpb:.4f}")
+
+    if master_process and args.result_output:
+        result_payload = {
+            "schema_version": 1,
+            "benchmark": "sft_packing_fixed_budget",
+            "command": [sys.executable, *sys.argv],
+            "config": user_config,
+            "provenance": run_provenance,
+            "environment": {
+                "torch_version": torch.__version__,
+                "cuda_version": torch.version.cuda,
+                "device_type": device_type,
+                "device_names": (
+                    [
+                        torch.cuda.get_device_name(index)
+                        for index in range(torch.cuda.device_count())
+                    ]
+                    if device_type == "cuda"
+                    else []
+                ),
+                "world_size": world_size,
+                "dtype": args.dtype,
+            },
+            "parent_checkpoint": {
+                "source": "sft" if resuming else "base",
+                "model_tag": (
+                    output_model_tag if resuming else args.model_tag
+                ),
+                "step": int(meta["step"]),
+            },
+            "model_parameters": sum(
+                parameter.numel() for parameter in original_model.parameters()
+            ),
+            "result": {
+                "completed_steps": step,
+                "final_train_loss": debiased_loss,
+                "validation_bpb": validation_bpb,
+                "minimum_validation_bpb": (
+                    min_validation_bpb
+                    if validation_bpb is not None
+                    else None
+                ),
+                "peak_memory_bytes_rank0": peak_memory_bytes,
+                "global_packer": global_packer_summary,
+                "timing": summarize_step_measurements(step_measurements),
+                "rank0_step_measurements": step_measurements,
+                "checkpoint_written": not args.dry_run,
+            },
+        }
+        save_json_atomic(args.result_output, result_payload)
+        print0(f"Saved benchmark result: {args.result_output}")
 
     if not args.dry_run:
         from nanochat.report import get_report
@@ -606,7 +740,7 @@ def main():
                         else None
                     ),
                     "Final MFU %": last_mfu,
-                    **train_packer.metrics.summary(),
+                    **global_packer_summary,
                 },
             ],
         )
