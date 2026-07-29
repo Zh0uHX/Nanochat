@@ -25,7 +25,16 @@ def test_summarize_run_computes_effective_content_throughput(tmp_path):
         },
     }
 
-    result = summarize_run(path, payload, sequential_effective_tps=600)
+    result = summarize_run(
+        path,
+        payload,
+        sequential_effective_tps=600,
+        sequential_efficiency=0.6,
+    )
 
     assert result["median_effective_content_tokens_per_second"] == 900
-    assert result["effective_content_speedup_vs_sequential"] == 1.5
+    assert result["content_per_padded_token_ratio_vs_sequential"] == 1.5
+    assert (
+        result["observed_effective_content_throughput_ratio_vs_sequential"]
+        == 1.5
+    )

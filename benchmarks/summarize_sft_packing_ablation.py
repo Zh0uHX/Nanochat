@@ -96,7 +96,12 @@ def validate_runs(runs):
     return expected
 
 
-def summarize_run(path, payload, sequential_effective_tps):
+def summarize_run(
+    path,
+    payload,
+    sequential_effective_tps,
+    sequential_efficiency,
+):
     result = payload["result"]
     packer = result["global_packer"]
     timing = result["timing"]
@@ -114,7 +119,10 @@ def summarize_run(path, payload, sequential_effective_tps):
         "target_tokens_emitted": packer["target_tokens_emitted"],
         "median_padded_tokens_per_second": timing["tokens_per_second_median"],
         "median_effective_content_tokens_per_second": effective_tps,
-        "effective_content_speedup_vs_sequential": (
+        "content_per_padded_token_ratio_vs_sequential": (
+            packer["packing_efficiency"] / sequential_efficiency
+        ),
+        "observed_effective_content_throughput_ratio_vs_sequential": (
             effective_tps / sequential_effective_tps
         ),
         "median_mfu_percent": timing["mfu_percent_median"],
@@ -133,8 +141,16 @@ def build_summary(input_dir, checkpoint_sha256=""):
         sequential_payload["result"]["timing"]["tokens_per_second_median"]
         * sequential_payload["result"]["global_packer"]["packing_efficiency"]
     )
+    sequential_efficiency = sequential_payload["result"]["global_packer"][
+        "packing_efficiency"
+    ]
     rows = [
-        summarize_run(path, payload, sequential_effective_tps)
+        summarize_run(
+            path,
+            payload,
+            sequential_effective_tps,
+            sequential_efficiency,
+        )
         for path, payload in runs.values()
     ]
     return {
@@ -157,6 +173,7 @@ def build_summary(input_dir, checkpoint_sha256=""):
             "The budget fixes padded tokens and optimizer steps, so better packing exposes more content tokens to the model.",
             "Validation uses 262144 padded tokens and is suitable for a pilot comparison, not a definitive quality claim.",
             "Reported throughput excludes the first 10 optimizer steps and does not include dataset/model startup or validation.",
+            "Strategies ran sequentially and GPU performance state varied; wall-clock throughput ratios are observational, not causal speedup estimates.",
         ],
     }
 
