@@ -9,10 +9,20 @@ from nanochat.optim import (
 )
 
 
-def adamw_inputs(device="cpu"):
+def adamw_inputs(device="cpu", dtype=torch.float32, shape=(8, 8)):
     generator = torch.Generator(device=device).manual_seed(7)
-    parameter = torch.randn(8, 8, generator=generator, device=device)
-    gradient = torch.randn(8, 8, generator=generator, device=device)
+    parameter = torch.randn(
+        *shape,
+        generator=generator,
+        device=device,
+        dtype=dtype,
+    )
+    gradient = torch.randn(
+        *shape,
+        generator=generator,
+        device=device,
+        dtype=dtype,
+    )
     first_moment = torch.zeros_like(parameter)
     second_moment = torch.zeros_like(parameter)
     scalars = [
@@ -62,6 +72,34 @@ def test_compiled_adamw_matches_eager():
 
     for eager_value, compiled_value in zip(eager_inputs[:4], compiled_inputs[:4]):
         torch.testing.assert_close(eager_value, compiled_value)
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="BF16 parity requires CUDA")
+def test_compiled_adamw_matches_eager_bf16_after_repeated_steps():
+    eager_inputs = adamw_inputs(
+        device="cuda",
+        dtype=torch.bfloat16,
+        shape=(512, 128),
+    )
+    compiled_inputs = tuple(
+        value.clone() if isinstance(value, torch.Tensor) else value
+        for value in eager_inputs
+    )
+
+    for step in range(1, 6):
+        eager_inputs[4].fill_(step)
+        compiled_inputs[4].fill_(step)
+        _adamw_step_eager(*eager_inputs)
+        _adamw_step_compiled(*compiled_inputs)
+
+    for eager_value, compiled_value in zip(eager_inputs[:4], compiled_inputs[:4]):
+        torch.testing.assert_close(
+            eager_value,
+            compiled_value,
+            atol=0.03125,
+            rtol=0.01,
+        )
 
 
 @pytest.mark.slow

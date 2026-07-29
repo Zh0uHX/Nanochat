@@ -55,8 +55,10 @@ pytest tests/test_optimizer_kernels.py -m slow -v
 
 Report compiled/eager median kernel latency, PyTorch/CUDA/GPU versions, and the
 maximum parameter difference after a fixed number of updates. The benchmark
-JSON records these fields and clean-tree provenance directly. Do not describe
-the eager path as “fused”.
+JSON records these fields, BF16 `allclose` status at `atol=0.03125`,
+`rtol=0.01`, and clean-tree provenance directly. A large pointwise relative
+error near zero is not used as the acceptance criterion. Do not describe the
+eager path as “fused”.
 
 ## 3. KV-cache inference
 
@@ -66,7 +68,7 @@ without presenting it as an original implementation.
 ```bash
 python -m benchmarks.benchmark_kv_cache \
   --source=sft --model-tag=<tag> \
-  --context-lengths=128,512,1024 --new-tokens=64 \
+  --context-lengths=128,512,1024 --new-tokens=64 --warmup=1 --repeats=3 \
   --output=benchmark_results/kv_cache.json
 ```
 

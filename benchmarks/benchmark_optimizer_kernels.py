@@ -19,6 +19,8 @@ def parse_args():
     parser.add_argument("--warmup", type=int, default=5)
     parser.add_argument("--repeats", type=int, default=20)
     parser.add_argument("--parity-steps", type=int, default=5)
+    parser.add_argument("--parity-atol", type=float, default=0.03125)
+    parser.add_argument("--parity-rtol", type=float, default=0.01)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--output", default="")
     return parser.parse_args()
@@ -92,13 +94,31 @@ def parity_check(args):
         denominator = eager.float().abs().clamp_min(torch.finfo(torch.float32).eps)
         differences[name] = {
             "max_abs": absolute.max().item(),
+            "mean_abs": absolute.mean().item(),
             "max_rel": (absolute / denominator).max().item(),
+            "relative_l2": (
+                torch.linalg.vector_norm(absolute)
+                / torch.linalg.vector_norm(eager.float()).clamp_min(
+                    torch.finfo(torch.float32).eps
+                )
+            ).item(),
+            "within_tolerance": torch.allclose(
+                eager,
+                compiled,
+                atol=args.parity_atol,
+                rtol=args.parity_rtol,
+            ),
         }
     return {
         "steps": args.parity_steps,
+        "atol": args.parity_atol,
+        "rtol": args.parity_rtol,
         "tensors": differences,
         "max_abs": max(row["max_abs"] for row in differences.values()),
         "max_rel": max(row["max_rel"] for row in differences.values()),
+        "within_tolerance": all(
+            row["within_tolerance"] for row in differences.values()
+        ),
     }
 
 
@@ -112,6 +132,8 @@ def main():
         "warmup": args.warmup,
         "repeats": args.repeats,
         "parity_steps": args.parity_steps,
+        "parity_atol": args.parity_atol,
+        "parity_rtol": args.parity_rtol,
         "seed": args.seed,
     }
     properties = torch.cuda.get_device_properties(0)
