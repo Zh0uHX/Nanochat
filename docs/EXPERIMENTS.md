@@ -8,6 +8,11 @@ corresponding result file is produced by these protocols.
 Goal: determine whether reduced padding offsets additional CPU selection cost
 and whether data ordering changes model quality.
 
+Status: the three-seed CPU microbenchmark is complete and published in
+[`docs/results/packing_cpu_2026_07.json`](results/packing_cpu_2026_07.json).
+It shows the packing-efficiency/CPU-latency tradeoff only. GPU throughput,
+validation BPB, and downstream quality remain pending.
+
 Controls:
 
 - identical base checkpoint and tokenizer;
@@ -43,12 +48,14 @@ Goal: determine the cost of the eager workaround and verify numerical parity.
 
 ```bash
 python -m benchmarks.benchmark_optimizer_kernels \
+  --parity-steps=5 \
   --output=benchmark_results/optimizer_kernels.json
 pytest tests/test_optimizer_kernels.py -m slow -v
 ```
 
 Report compiled/eager median kernel latency, PyTorch/CUDA/GPU versions, and the
-maximum parameter difference after a fixed number of updates. Do not describe
+maximum parameter difference after a fixed number of updates. The benchmark
+JSON records these fields and clean-tree provenance directly. Do not describe
 the eager path as “fused”.
 
 ## 3. KV-cache inference

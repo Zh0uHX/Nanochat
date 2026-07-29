@@ -8,3 +8,11 @@ removed.
 New benchmark outputs belong in the ignored `benchmark_results/` directory
 during development. Publish reviewed JSON files here only after adding the Git
 commit, config hash, checkpoint checksum, hardware, command, and raw metrics.
+
+## Reviewed results
+
+- `packing_cpu_2026_07.json`: three-seed CPU microbenchmark of sequential,
+  first-fit, length-bucket, and best-fit SFT packing at batch size 16 and
+  sequence length 2,048. The embedded provenance points to clean commit
+  `680413c9c402e745429aed012a5990273d3bfb52`. It does not measure GPU training
+  throughput or model quality.

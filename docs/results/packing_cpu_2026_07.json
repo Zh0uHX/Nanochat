@@ -1,0 +1,531 @@
+{
+  "aggregate": [
+    {
+      "metrics": {
+        "batches_per_second": {
+          "max": 982.3896824939945,
+          "mean": 946.5955104645949,
+          "min": 889.3321717695682,
+          "stdev": 50.1060766129622
+        },
+        "median_batch_ms": {
+          "max": 1.036896021105349,
+          "mean": 1.0209722289194663,
+          "min": 1.0072500444948673,
+          "stdev": 0.014945109228380236
+        },
+        "p95_batch_ms": {
+          "max": 2.002833876758814,
+          "mean": 1.5038610436022282,
+          "min": 1.249208115041256,
+          "stdev": 0.4321540339014546
+        },
+        "packing_efficiency": {
+          "max": 0.8550847974621767,
+          "mean": 0.8503499471286807,
+          "min": 0.8469288067349927,
+          "stdev": 0.004233724310809641
+        },
+        "padding_ratio": {
+          "max": 0.15307119326500732,
+          "mean": 0.14965005287131936,
+          "min": 0.14491520253782333,
+          "stdev": 0.004233724310809646
+        },
+        "truncated_conversations": {
+          "max": 369,
+          "mean": 363.6666666666667,
+          "min": 360,
+          "stdev": 4.725815626252609
+        },
+        "truncated_tokens": {
+          "max": 332801,
+          "mean": 299814.0,
+          "min": 279347,
+          "stdev": 28842.59573963481
+        }
+      },
+      "num_seeds": 3,
+      "strategy": "sequential",
+      "vs_sequential": {
+        "median_batch_latency_multiplier": 1.0,
+        "packing_efficiency_absolute_gain": 0.0,
+        "padding_reduction_fraction": 0.0
+      }
+    },
+    {
+      "metrics": {
+        "batches_per_second": {
+          "max": 580.7005897832088,
+          "mean": 577.385047251796,
+          "min": 575.6517440824981,
+          "stdev": 2.872337336850587
+        },
+        "median_batch_ms": {
+          "max": 1.728291972540319,
+          "mean": 1.7215974706535537,
+          "min": 1.7097709933295846,
+          "stdev": 0.010271784005087084
+        },
+        "p95_batch_ms": {
+          "max": 2.0277088042348623,
+          "mean": 2.0081112161278725,
+          "min": 1.9817498978227377,
+          "stdev": 0.023714263730813586
+        },
+        "packing_efficiency": {
+          "max": 0.9958172279160566,
+          "mean": 0.9957817431267285,
+          "min": 0.9957418252806247,
+          "stdev": 3.7896284142411624e-05
+        },
+        "padding_ratio": {
+          "max": 0.004258174719375305,
+          "mean": 0.004218256873271515,
+          "min": 0.004182772083943387,
+          "stdev": 3.789628414240447e-05
+        },
+        "truncated_conversations": {
+          "max": 436,
+          "mean": 427.6666666666667,
+          "min": 422,
+          "stdev": 7.371114795831994
+        },
+        "truncated_tokens": {
+          "max": 392164,
+          "mean": 352861.0,
+          "min": 329608,
+          "stdev": 34227.403626334264
+        }
+      },
+      "num_seeds": 3,
+      "strategy": "first_fit",
+      "vs_sequential": {
+        "median_batch_latency_multiplier": 1.6862333978227653,
+        "packing_efficiency_absolute_gain": 0.14543179599804779,
+        "padding_reduction_fraction": 0.9718125266758262
+      }
+    },
+    {
+      "metrics": {
+        "batches_per_second": {
+          "max": 439.88139169471395,
+          "mean": 435.2120577392656,
+          "min": 431.5801275963471,
+          "stdev": 4.246751865884942
+        },
+        "median_batch_ms": {
+          "max": 2.3215620312839746,
+          "mean": 2.3069096884379783,
+          "min": 2.287562470883131,
+          "stdev": 0.017479242353760967
+        },
+        "p95_batch_ms": {
+          "max": 2.61787511408329,
+          "mean": 2.563042022908727,
+          "min": 2.533416962251067,
+          "stdev": 0.04753817891584117
+        },
+        "packing_efficiency": {
+          "max": 0.9974856027330405,
+          "mean": 0.9974441394176021,
+          "min": 0.9973720107369448,
+          "stdev": 6.269815676920558e-05
+        },
+        "padding_ratio": {
+          "max": 0.0026279892630551487,
+          "mean": 0.0025558605823979177,
+          "min": 0.0025143972669594925,
+          "stdev": 6.269815676916625e-05
+        },
+        "truncated_conversations": {
+          "max": 436,
+          "mean": 427.6666666666667,
+          "min": 422,
+          "stdev": 7.371114795831994
+        },
+        "truncated_tokens": {
+          "max": 392164,
+          "mean": 352861.0,
+          "min": 329608,
+          "stdev": 34227.403626334264
+        }
+      },
+      "num_seeds": 3,
+      "strategy": "length_bucket",
+      "vs_sequential": {
+        "median_batch_latency_multiplier": 2.259522466031685,
+        "packing_efficiency_absolute_gain": 0.1470941922889214,
+        "padding_reduction_fraction": 0.9829210846681381
+      }
+    },
+    {
+      "metrics": {
+        "batches_per_second": {
+          "max": 520.0432241230841,
+          "mean": 517.6946895734708,
+          "min": 516.1893764555587,
+          "stdev": 2.0606557811247708
+        },
+        "median_batch_ms": {
+          "max": 1.9407084910199046,
+          "mean": 1.9336319528520107,
+          "min": 1.923645962961018,
+          "stdev": 0.008895569005794642
+        },
+        "p95_batch_ms": {
+          "max": 2.1580830216407776,
+          "mean": 2.14938858213524,
+          "min": 2.140999771654606,
+          "stdev": 0.008545724916480544
+        },
+        "packing_efficiency": {
+          "max": 0.9982332845290386,
+          "mean": 0.9981493818122661,
+          "min": 0.9980649097120546,
+          "stdev": 8.418885256802318e-05
+        },
+        "padding_ratio": {
+          "max": 0.0019350902879453392,
+          "mean": 0.001850618187733854,
+          "min": 0.0017667154709614446,
+          "stdev": 8.418885256799454e-05
+        },
+        "truncated_conversations": {
+          "max": 436,
+          "mean": 427.6666666666667,
+          "min": 422,
+          "stdev": 7.371114795831994
+        },
+        "truncated_tokens": {
+          "max": 392164,
+          "mean": 352861.0,
+          "min": 329608,
+          "stdev": 34227.403626334264
+        }
+      },
+      "num_seeds": 3,
+      "strategy": "best_fit",
+      "vs_sequential": {
+        "median_batch_latency_multiplier": 1.8939123886831348,
+        "packing_efficiency_absolute_gain": 0.14779943468358536,
+        "padding_reduction_fraction": 0.9876336950624056
+      }
+    }
+  ],
+  "benchmark": "sft_packing_cpu",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/rickzhou/Code/Codex/nanochat/nanochat/benchmarks/benchmark_sft_packing.py",
+    "--samples",
+    "10000",
+    "--batches",
+    "500",
+    "--seeds",
+    "42,1337,2026",
+    "--output",
+    "benchmark_results/packing_cpu.json"
+  ],
+  "config": {
+    "batch_size": 16,
+    "batches": 500,
+    "bucket_width": 64,
+    "buffer_size": 100,
+    "samples": 10000,
+    "seeds": [
+      42,
+      1337,
+      2026
+    ],
+    "sequence_len": 2048
+  },
+  "provenance": {
+    "config_sha256": "b31afd3ef539ef492835520e4bd583b996ec40145438ede7dbae753cf2891fb5",
+    "created_at_utc": "2026-07-29T09:47:22.091113+00:00",
+    "git": {
+      "branch": "main",
+      "commit": "680413c9c402e745429aed012a5990273d3bfb52",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dirty": false,
+      "working_tree_sha256": "2daec8b23b2b92497881b44ef876f8caf344e0851bb17295c20cc194cf5c40b8"
+    },
+    "runtime": {
+      "platform": "macOS-26.3.1-arm64-arm-64bit-Mach-O",
+      "python": "3.14.6"
+    },
+    "schema_version": 1
+  },
+  "runs": [
+    {
+      "length_summary": {
+        "max": 4096,
+        "median": 178.0,
+        "min": 4
+      },
+      "results": [
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 982.3896824939945,
+          "content_tokens_emitted": 13882857,
+          "conversations_fetched": 47347,
+          "conversations_packed": 47247,
+          "median_batch_ms": 1.0072500444948673,
+          "p95_batch_ms": 1.249208115041256,
+          "packing_efficiency": 0.8469288067349927,
+          "padding_ratio": 0.15307119326500732,
+          "padding_tokens_emitted": 2509143,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 14195523,
+          "source_tokens_packed": 14161899,
+          "strategy": "sequential",
+          "target_tokens_emitted": 13874857,
+          "truncated_conversations": 360,
+          "truncated_tokens": 279347,
+          "wall_seconds": 0.5089630000293255
+        },
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 575.8028078896808,
+          "content_tokens_emitted": 16323436,
+          "conversations_fetched": 55715,
+          "conversations_packed": 55615,
+          "median_batch_ms": 1.7097709933295846,
+          "p95_batch_ms": 2.0148749463260174,
+          "packing_efficiency": 0.9958172279160566,
+          "padding_ratio": 0.004182772083943387,
+          "padding_tokens_emitted": 68564,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 16681291,
+          "source_tokens_packed": 16653044,
+          "strategy": "first_fit",
+          "target_tokens_emitted": 16315436,
+          "truncated_conversations": 422,
+          "truncated_tokens": 329608,
+          "wall_seconds": 0.8683528339024633
+        },
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 439.88139169471395,
+          "content_tokens_emitted": 16350784,
+          "conversations_fetched": 55730,
+          "conversations_packed": 55630,
+          "median_batch_ms": 2.287562470883131,
+          "p95_batch_ms": 2.5378339923918247,
+          "packing_efficiency": 0.9974856027330405,
+          "padding_ratio": 0.0025143972669594925,
+          "padding_tokens_emitted": 41216,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 16686168,
+          "source_tokens_packed": 16680392,
+          "strategy": "length_bucket",
+          "target_tokens_emitted": 16342784,
+          "truncated_conversations": 422,
+          "truncated_tokens": 329608,
+          "wall_seconds": 1.1366700420621783
+        },
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 520.0432241230841,
+          "content_tokens_emitted": 16363040,
+          "conversations_fetched": 55759,
+          "conversations_packed": 55659,
+          "median_batch_ms": 1.923645962961018,
+          "p95_batch_ms": 2.1580830216407776,
+          "packing_efficiency": 0.9982332845290386,
+          "padding_ratio": 0.0017667154709614446,
+          "padding_tokens_emitted": 28960,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 16696460,
+          "source_tokens_packed": 16692648,
+          "strategy": "best_fit",
+          "target_tokens_emitted": 16355040,
+          "truncated_conversations": 422,
+          "truncated_tokens": 329608,
+          "wall_seconds": 0.961458541918546
+        }
+      ],
+      "seed": 42
+    },
+    {
+      "length_summary": {
+        "max": 4096,
+        "median": 178.0,
+        "min": 3
+      },
+      "results": [
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 889.3321717695682,
+          "content_tokens_emitted": 14016550,
+          "conversations_fetched": 48774,
+          "conversations_packed": 48674,
+          "median_batch_ms": 1.036896021105349,
+          "p95_batch_ms": 2.002833876758814,
+          "packing_efficiency": 0.8550847974621767,
+          "padding_ratio": 0.14491520253782333,
+          "padding_tokens_emitted": 2375450,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 14332878,
+          "source_tokens_packed": 14303844,
+          "strategy": "sequential",
+          "target_tokens_emitted": 14008550,
+          "truncated_conversations": 362,
+          "truncated_tokens": 287294,
+          "wall_seconds": 0.5622196248732507
+        },
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 580.7005897832088,
+          "content_tokens_emitted": 16322200,
+          "conversations_fetched": 56791,
+          "conversations_packed": 56691,
+          "median_batch_ms": 1.728291972540319,
+          "p95_batch_ms": 1.9817498978227377,
+          "packing_efficiency": 0.9957418252806247,
+          "padding_ratio": 0.004258174719375305,
+          "padding_tokens_emitted": 69800,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 16692699,
+          "source_tokens_packed": 16658361,
+          "strategy": "first_fit",
+          "target_tokens_emitted": 16314200,
+          "truncated_conversations": 425,
+          "truncated_tokens": 336811,
+          "wall_seconds": 0.8610289171338081
+        },
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 434.17465392673574,
+          "content_tokens_emitted": 16348922,
+          "conversations_fetched": 56792,
+          "conversations_packed": 56693,
+          "median_batch_ms": 2.3116045631468296,
+          "p95_batch_ms": 2.533416962251067,
+          "packing_efficiency": 0.9973720107369448,
+          "padding_ratio": 0.0026279892630551487,
+          "padding_tokens_emitted": 43078,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 16692845,
+          "source_tokens_packed": 16685733,
+          "strategy": "length_bucket",
+          "target_tokens_emitted": 16340922,
+          "truncated_conversations": 425,
+          "truncated_tokens": 336811,
+          "wall_seconds": 1.1516102920286357
+        },
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 516.1893764555587,
+          "content_tokens_emitted": 16360280,
+          "conversations_fetched": 56817,
+          "conversations_packed": 56717,
+          "median_batch_ms": 1.9407084910199046,
+          "p95_batch_ms": 2.140999771654606,
+          "packing_efficiency": 0.9980649097120546,
+          "padding_ratio": 0.0019350902879453392,
+          "padding_tokens_emitted": 31720,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 16701037,
+          "source_tokens_packed": 16697091,
+          "strategy": "best_fit",
+          "target_tokens_emitted": 16352280,
+          "truncated_conversations": 425,
+          "truncated_tokens": 336811,
+          "wall_seconds": 0.9686367500107735
+        }
+      ],
+      "seed": 1337
+    },
+    {
+      "length_summary": {
+        "max": 4096,
+        "median": 178.0,
+        "min": 4
+      },
+      "results": [
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 968.064677130222,
+          "content_tokens_emitted": 13917402,
+          "conversations_fetched": 48398,
+          "conversations_packed": 48298,
+          "median_batch_ms": 1.0187706211581826,
+          "p95_batch_ms": 1.2595411390066147,
+          "packing_efficiency": 0.8490362371888727,
+          "padding_ratio": 0.1509637628111274,
+          "padding_tokens_emitted": 2474598,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 14279377,
+          "source_tokens_packed": 14250203,
+          "strategy": "sequential",
+          "target_tokens_emitted": 13909402,
+          "truncated_conversations": 369,
+          "truncated_tokens": 332801,
+          "wall_seconds": 0.5164944159332663
+        },
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 575.6517440824981,
+          "content_tokens_emitted": 16322927,
+          "conversations_fetched": 56716,
+          "conversations_packed": 56617,
+          "median_batch_ms": 1.7267294460907578,
+          "p95_batch_ms": 2.0277088042348623,
+          "packing_efficiency": 0.9957861761835042,
+          "padding_ratio": 0.004213823816495852,
+          "padding_tokens_emitted": 69073,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 16749605,
+          "source_tokens_packed": 16714815,
+          "strategy": "first_fit",
+          "target_tokens_emitted": 16314927,
+          "truncated_conversations": 436,
+          "truncated_tokens": 392164,
+          "wall_seconds": 0.8685807089786977
+        },
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 431.5801275963471,
+          "content_tokens_emitted": 16350607,
+          "conversations_fetched": 56711,
+          "conversations_packed": 56611,
+          "median_batch_ms": 2.3215620312839746,
+          "p95_batch_ms": 2.61787511408329,
+          "packing_efficiency": 0.9974748047828209,
+          "padding_ratio": 0.002525195217179112,
+          "padding_tokens_emitted": 41393,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 16748580,
+          "source_tokens_packed": 16742771,
+          "strategy": "length_bucket",
+          "target_tokens_emitted": 16342607,
+          "truncated_conversations": 436,
+          "truncated_tokens": 392164,
+          "wall_seconds": 1.1585334171541035
+        },
+        {
+          "batches_emitted": 500,
+          "batches_per_second": 516.8514681417696,
+          "content_tokens_emitted": 16361674,
+          "conversations_fetched": 56741,
+          "conversations_packed": 56641,
+          "median_batch_ms": 1.9365414045751095,
+          "p95_batch_ms": 2.1490829531103373,
+          "packing_efficiency": 0.9981499511957053,
+          "padding_ratio": 0.0018500488042947779,
+          "padding_tokens_emitted": 30326,
+          "rows_emitted": 8000,
+          "source_tokens_fetched": 16757183,
+          "source_tokens_packed": 16753838,
+          "strategy": "best_fit",
+          "target_tokens_emitted": 16353674,
+          "truncated_conversations": 436,
+          "truncated_tokens": 392164,
+          "wall_seconds": 0.9673959170468152
+        }
+      ],
+      "seed": 2026
+    }
+  ],
+  "schema_version": 2
+}

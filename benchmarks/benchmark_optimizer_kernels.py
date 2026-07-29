@@ -3,11 +3,13 @@
 import argparse
 import json
 import statistics
+import sys
 import time
 
 import torch
 
 from nanochat.optim import _adamw_step_compiled, _adamw_step_eager
+from nanochat.provenance import collect_run_provenance
 
 
 def parse_args():
@@ -16,13 +18,28 @@ def parse_args():
     parser.add_argument("--columns", type=int, default=1664)
     parser.add_argument("--warmup", type=int, default=5)
     parser.add_argument("--repeats", type=int, default=20)
+    parser.add_argument("--parity-steps", type=int, default=5)
+    parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--output", default="")
     return parser.parse_args()
 
 
-def make_inputs(rows, columns):
-    parameter = torch.randn(rows, columns, device="cuda", dtype=torch.bfloat16)
-    gradient = torch.randn_like(parameter)
+def make_inputs(rows, columns, seed):
+    generator = torch.Generator(device="cuda").manual_seed(seed)
+    parameter = torch.randn(
+        rows,
+        columns,
+        generator=generator,
+        device="cuda",
+        dtype=torch.bfloat16,
+    )
+    gradient = torch.randn(
+        rows,
+        columns,
+        generator=generator,
+        device="cuda",
+        dtype=torch.bfloat16,
+    )
     first_moment = torch.zeros_like(parameter)
     second_moment = torch.zeros_like(parameter)
     scalars = [
@@ -32,8 +49,12 @@ def make_inputs(rows, columns):
     return parameter, gradient, first_moment, second_moment, *scalars
 
 
-def benchmark(function, args):
-    inputs = make_inputs(args.rows, args.columns)
+def clone_inputs(inputs):
+    return tuple(value.clone() for value in inputs)
+
+
+def benchmark(function, args, seed):
+    inputs = make_inputs(args.rows, args.columns, seed)
     for _ in range(args.warmup):
         function(*inputs)
     torch.cuda.synchronize()
@@ -50,15 +71,65 @@ def benchmark(function, args):
     }
 
 
+def parity_check(args):
+    base_inputs = make_inputs(args.rows, args.columns, args.seed)
+    eager_inputs = clone_inputs(base_inputs)
+    compiled_inputs = clone_inputs(base_inputs)
+    for step in range(1, args.parity_steps + 1):
+        eager_inputs[4].fill_(step)
+        compiled_inputs[4].fill_(step)
+        _adamw_step_eager(*eager_inputs)
+        _adamw_step_compiled(*compiled_inputs)
+    torch.cuda.synchronize()
+    tensor_names = ("parameter", "gradient", "first_moment", "second_moment")
+    differences = {}
+    for name, eager, compiled in zip(
+        tensor_names,
+        eager_inputs[:4],
+        compiled_inputs[:4],
+    ):
+        absolute = (eager.float() - compiled.float()).abs()
+        denominator = eager.float().abs().clamp_min(torch.finfo(torch.float32).eps)
+        differences[name] = {
+            "max_abs": absolute.max().item(),
+            "max_rel": (absolute / denominator).max().item(),
+        }
+    return {
+        "steps": args.parity_steps,
+        "tensors": differences,
+        "max_abs": max(row["max_abs"] for row in differences.values()),
+        "max_rel": max(row["max_rel"] for row in differences.values()),
+    }
+
+
 def main():
     args = parse_args()
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required")
+    config = {
+        "rows": args.rows,
+        "columns": args.columns,
+        "warmup": args.warmup,
+        "repeats": args.repeats,
+        "parity_steps": args.parity_steps,
+        "seed": args.seed,
+    }
+    properties = torch.cuda.get_device_properties(0)
     results = {
+        "schema_version": 2,
+        "benchmark": "adamw_optimizer_kernel",
+        "config": config,
+        "command": [sys.executable, *sys.argv],
+        "provenance": collect_run_provenance(config),
         "device": torch.cuda.get_device_name(),
+        "device_capability": list(torch.cuda.get_device_capability()),
+        "device_memory_bytes": properties.total_memory,
+        "torch_version": torch.__version__,
+        "cuda_version": torch.version.cuda,
         "shape": [args.rows, args.columns],
-        "compiled": benchmark(_adamw_step_compiled, args),
-        "eager": benchmark(_adamw_step_eager, args),
+        "parity": parity_check(args),
+        "compiled": benchmark(_adamw_step_compiled, args, args.seed),
+        "eager": benchmark(_adamw_step_eager, args, args.seed),
     }
     results["compiled_speedup"] = (
         results["eager"]["median_ms"] / results["compiled"]["median_ms"]

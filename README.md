@@ -15,8 +15,9 @@ compatibility, provenance, and reproducible benchmarking**.
 - Large datasets, optimizer states, and model weights are excluded from Git.
 - A historical 1.68B run is documented, but it predates the exact-resume
   refactor and is not presented as a validation of the new implementation.
-- New GPU performance results are intentionally left unclaimed until the
-  protocols in [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) are executed.
+- The CPU packing microbenchmark has been executed with three seeds; end-to-end
+  GPU performance remains intentionally unclaimed until the remaining protocols
+  in [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) are executed.
 
 ## Verified historical run
 
@@ -36,6 +37,25 @@ The archived evaluation report references a different checkpoint step
 (169150 versus the available 14889), so its CORE/BPB values are excluded.
 See [the legacy manifest](docs/results/legacy_2026_02.json) and
 [MODEL_CARD.md](MODEL_CARD.md).
+
+## Reviewed packing result
+
+On a 10,000-sample synthetic long-tailed conversation distribution, with 500
+batches per seed, batch size 16, sequence length 2,048, and seeds 42/1337/2026:
+
+| Strategy | Padding ratio (mean ± SD) | Median batch construction |
+|---|---:|---:|
+| Sequential | 14.965% ± 0.423% | 1.021 ± 0.015 ms |
+| First fit | 0.422% ± 0.004% | 1.722 ± 0.010 ms |
+| Length bucket | 0.256% ± 0.006% | 2.307 ± 0.017 ms |
+| Best fit | 0.185% ± 0.008% | 1.934 ± 0.009 ms |
+
+Best fit reduced padding by 98.76% relative to sequential packing while keeping
+CPU batch construction below 2 ms median on the measured machine. This isolates
+packer behavior; it is not evidence of end-to-end GPU training speedup or
+unchanged model quality. The reviewed raw result includes the clean Git commit,
+working-tree hash, configuration hash, and per-seed measurements:
+[packing_cpu_2026_07.json](docs/results/packing_cpu_2026_07.json).
 
 ## Original work in this fork
 

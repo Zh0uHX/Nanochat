@@ -22,8 +22,9 @@ Actions
   同步装箱和恢复，确保用户提示、工具输出与 padding 不参与 assistant-only
   next-token loss；加入超长样本 `truncate/error` 策略及截断、利用率统计。
 - 设计固定预算消融协议，对比四种装箱策略的 padding ratio、CPU p50/p95
-  延迟、训练吞吐、MFU、验证 BPB 与下游任务指标；已提供可复现 benchmark
-  与结果模板，GPU 结论在完成多 seed 实验前不作宣称。
+  延迟、训练吞吐、MFU、验证 BPB 与下游任务指标；三 seed CPU 基准中
+  best-fit 将 padding ratio 从 14.97% 降至 0.185%（相对减少 98.76%），
+  batch 构造中位延迟由 1.02 ms 增至 1.93 ms；GPU 吞吐与质量结论仍待验证。
 - 完善实验溯源：checkpoint/eval 记录配置 SHA-256、Git commit、dirty/diff
   状态及包含未跟踪源码的工作树内容哈希，并对历史评测报告与 checkpoint
   step 不一致的结果作显式排除。
@@ -46,7 +47,8 @@ Actions
 ## 一页简历压缩版
 
 - 基于 nanochat 重构分布式 SFT：自研有状态 best-fit/length-bucket packer，
-  保存预取缓冲区与 rank 游标，实现确定性数据分片和后续 batch 精确恢复。
+  保存预取缓冲区与 rank 游标，实现确定性数据分片和后续 batch 精确恢复；
+  三 seed CPU 基准将 padding ratio 从 14.97% 降至 0.185%。
 - 贯通 tokenizer supervision mask、packing 与 loss，排除 prompt/tool-output/
   padding token；实现超长样本策略及 packing efficiency、truncation 指标。
 - 实现 rank-sharded optimizer/packer checkpoint、原子写入和全 rank 完成
