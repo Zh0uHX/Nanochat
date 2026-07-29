@@ -77,14 +77,24 @@ hardware. Compare cached decoding with the model’s naive full-prefix generatio
 
 ## 4. Exact-resume acceptance test
 
-For a tiny model:
+The executable acceptance test uses a tiny deterministic language model while
+exercising the production SFT packer, atomic model/optimizer checkpoint helpers,
+rank-local packer state, completion marker, and reload path:
+
+```bash
+torchrun --standalone --nproc_per_node=2 \
+  -m benchmarks.benchmark_exact_resume \
+  --steps=8 --split-step=3 \
+  --output=benchmark_results/exact_resume_2x.json
+```
+
+It performs the following comparison:
 
 1. run `N` uninterrupted steps;
 2. run `K` steps, save, resume, then run `N-K` steps;
 3. compare input token batches, losses, model parameters, optimizer state, and
    packer state;
-4. repeat with two ranks.
+4. require exact equality independently on both ranks.
 
-The current CPU unit tests prove exact packer-batch replay. Full model and
-multi-rank bitwise equivalence remains a GPU integration test and must be
-reported separately.
+This is a checkpoint/data-path acceptance test, not a model-quality benchmark.
+The separate CPU unit tests continue to cover individual packer invariants.

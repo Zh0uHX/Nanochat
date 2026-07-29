@@ -215,6 +215,14 @@ python -m benchmarks.benchmark_optimizer_kernels \
   --output=benchmark_results/optimizer_kernels.json
 ```
 
+Two-rank exact-resume acceptance test:
+
+```bash
+torchrun --standalone --nproc_per_node=2 \
+  -m benchmarks.benchmark_exact_resume \
+  --output=benchmark_results/exact_resume_2x.json
+```
+
 Required controls and reporting fields are defined in
 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md).
 Calibrated Chinese résumé bullets and interview boundaries are available in

@@ -28,6 +28,22 @@ archived base evaluation names step 169150 while the available base checkpoint
 is step 14889; therefore its CORE/BPB values are excluded from verified model
 quality claims.
 
+## Verified artifact identities
+
+The local archive and A800 copies were compared byte-for-byte with SHA-256:
+
+| Artifact | Step | Bytes | SHA-256 |
+|---|---:|---:|---|
+| Base model | 14,889 | 5,200,509,259 | `e9bb6f3bbe483e8bc603df389ac96e7c4dac97ac3ef7862a1c7f76759d8e3f7a` |
+| SFT model | 747 | 5,200,509,196 | `29243bd0d986a21ed9725fdcb2c0b6ebedf3cfc14af40b6acfbdab70e3acd56f` |
+
+The runtime tokenizer has vocabulary size 32,768 and SHA-256
+`c3945190ac5c38a6ac941480e21895763775619e756cde4d108cafb5a081e185`
+for `tokenizer.pkl`. The SFT checkpoint was loaded on commit `c626a2a` and
+completed deterministic generation. See
+[`docs/results/legacy_2026_02.json`](docs/results/legacy_2026_02.json) for the
+machine-readable manifest.
+
 ## Intended use
 
 - education and LLM systems research;
