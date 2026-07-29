@@ -214,6 +214,17 @@ def aggregate_packer_summaries(summaries):
     return aggregate.summary()
 
 
+def packer_summary_from_state(state):
+    metric_state = state["metrics"]
+    metrics = PackerMetrics(
+        **{
+            field_name: int(metric_state[field_name])
+            for field_name in PackerMetrics.__dataclass_fields__
+        }
+    )
+    return metrics.summary()
+
+
 def summarize_step_measurements(measurements):
     if not measurements:
         return {
@@ -623,7 +634,10 @@ def main():
                 }
             )
 
-        packer_summary = train_packer.metrics.summary()
+        # The live packer has already constructed the next pending batch.
+        # Report the state immediately before that batch so metrics cover only
+        # batches that have participated in forward/backward.
+        packer_summary = packer_summary_from_state(pending_packer_state)
         print0(
             f"step {step:05d} ({100 * progress:.2f}%) | "
             f"loss {debiased_loss:.6f} | lr {learning_rate_multiplier:.2f} | "
@@ -650,7 +664,7 @@ def main():
                 }
             )
 
-    local_packer_summary = train_packer.metrics.summary()
+    local_packer_summary = packer_summary_from_state(pending_packer_state)
     if ddp:
         rank_packer_summaries = [None] * world_size
         torch.distributed.all_gather_object(
