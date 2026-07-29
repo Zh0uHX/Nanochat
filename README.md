@@ -17,9 +17,9 @@ compatibility, provenance, and reproducible benchmarking**.
   refactor and is not presented as a validation of the new implementation.
 - The CPU packing, two-rank exact-resume, optimizer-kernel, checkpoint
   reevaluation, and KV-cache crossover benchmarks are reviewed and published.
-- End-to-end GPU SFT packing throughput and quality remain intentionally
-  unclaimed until the controlled ablation in
-  [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) is executed.
+- A single-run, 30-step target-scale SFT packing pilot is published; multi-seed
+  long-horizon quality and causal wall-clock speedup remain intentionally
+  unclaimed.
 
 ## Verified historical run
 
@@ -63,6 +63,28 @@ packer behavior; it is not evidence of end-to-end GPU training speedup or
 unchanged model quality. The reviewed raw result includes the clean Git commit,
 working-tree hash, configuration hash, and per-seed measurements:
 [packing_cpu_2026_07.json](docs/results/packing_cpu_2026_07.json).
+
+### Target-scale fixed-budget pilot
+
+Each strategy was also run for 30 optimizer steps from the same step-14,889,
+1.68B-parameter base checkpoint on 2×A800. The padded-token budget, optimizer,
+validation packer, and 262,144-token validation budget were fixed:
+
+| Strategy | Padding ratio | Content per padded-token ratio | Validation BPB |
+|---|---:|---:|---:|
+| Sequential | 22.737% | 1.000× | 0.4615 |
+| First fit | 0.573% | 1.287× | 0.4502 |
+| Length bucket | 0.416% | 1.289× | 0.4505 |
+| Best fit | 0.290% | 1.291× | 0.4498 |
+
+Best fit emitted 980,669 non-padding content tokens versus 759,898 for
+sequential under the same fixed compute-token budget (+29.05%). This is a
+single short pilot: the validation values have no multi-seed uncertainty, and
+GPU performance state drifted across sequentially executed strategies.
+Therefore the result supports a **compute-utilization** claim, not a causal
+wall-clock training speedup or definitive quality claim. Raw per-step results,
+dataset revisions/hashes, controls, limitations, and the checked summary are in
+[sft_packing_d26_a800_30step](docs/results/sft_packing_d26_a800_30step/summary.json).
 
 ## Reviewed A800 systems results
 

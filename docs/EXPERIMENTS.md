@@ -10,8 +10,17 @@ and whether data ordering changes model quality.
 
 Status: the three-seed CPU microbenchmark is complete and published in
 [`docs/results/packing_cpu_2026_07.json`](results/packing_cpu_2026_07.json).
-It shows the packing-efficiency/CPU-latency tradeoff only. GPU throughput,
-validation BPB, and downstream quality remain pending.
+It shows the packing-efficiency/CPU-latency tradeoff.
+
+A single-run target-scale pilot is also complete on 2×A800 using the existing
+1.68B step-14,889 checkpoint. At a fixed 30-step padded-token budget, best-fit
+reduced padding from 22.737% to 0.290% and emitted 29.05% more non-padding
+content tokens than sequential; fixed-policy validation BPB was 0.4498 versus
+0.4615. See
+[`docs/results/sft_packing_d26_a800_30step/summary.json`](results/sft_packing_d26_a800_30step/summary.json).
+This pilot has no multi-seed uncertainty, and run-order GPU state drift prevents
+a causal wall-clock speedup claim. Long-horizon downstream quality remains
+pending.
 
 Controls:
 
@@ -38,7 +47,9 @@ python -m benchmarks.benchmark_sft_packing \
   --samples=10000 --batches=500 --seeds=42,1337,2026 \
   --output=benchmark_results/packing_cpu.json
 
-BASE_MODEL_TAG=<tag> ABLATION_STEPS=200 NPROC_PER_NODE=8 \
+BASE_MODEL_TAG=d26 BASE_MODEL_STEP=14889 \
+ABLATION_STEPS=30 NPROC_PER_NODE=2 TOTAL_BATCH_SIZE=32768 \
+EVAL_TOKENS=262144 DRY_RUN=1 \
   bash runs/sft_packing_ablation.sh
 ```
 

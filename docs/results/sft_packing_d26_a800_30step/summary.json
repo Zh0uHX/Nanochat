@@ -1,0 +1,176 @@
+{
+  "benchmark": "sft_packing_fixed_budget_summary",
+  "common_config": {
+    "device_batch_size": 2,
+    "dry_run": true,
+    "dtype": "bfloat16",
+    "eval_every": -1,
+    "eval_tokens": 262144,
+    "max_seq_len": 2048,
+    "model_step": 14889,
+    "model_tag": "d26",
+    "num_iterations": 30,
+    "optimizer_kernel": "compiled",
+    "oversize_policy": "truncate",
+    "packing_bucket_width": 64,
+    "packing_buffer_size": 100,
+    "total_batch_size": 32768,
+    "validation_packing_strategy": "best_fit"
+  },
+  "created_at_utc": "2026-07-29T11:24:55.986589+00:00",
+  "dataset_manifest": {
+    "huggingface_datasets": [
+      {
+        "name": "HuggingFaceTB/smol-smoltalk",
+        "revision": "f73fe857d519ff6ac5af2ea67c4d3834da7b8bcc"
+      },
+      {
+        "name": "cais/mmlu",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      {
+        "name": "openai/gsm8k",
+        "revision": "740312add88f781978c0658806c59bc2815b9866"
+      }
+    ],
+    "local_files": [
+      {
+        "name": "identity_conversations.jsonl",
+        "sha256": "85a6a96342b88addeb1b8267933c47a6e3ceb1dfc07b305b805fd7ff8106878e"
+      },
+      {
+        "name": "words_alpha.txt",
+        "sha256": "3ed0c94610d8bcf7c11bbb49c56aa49c7234d32b66824df91f554169e572da48"
+      }
+    ],
+    "mode": "offline_cached_datasets",
+    "notes": [
+      "All Hugging Face datasets were loaded from the server cache with HF_DATASETS_OFFLINE=1 and HF_HUB_OFFLINE=1.",
+      "SimpleSpelling and SpellingBee are deterministic generated tasks; words_alpha.txt is their local word-list dependency.",
+      "Dataset ownership is deterministic by rank and the TaskMixture order is fixed by shuffle seed 42."
+    ],
+    "schema_version": 1,
+    "tokenizer": {
+      "token_bytes_sha256": "a9b173c3e103bae4c1e2a17f602d563c85596a0e580201fea8b0e9c54c054dcb",
+      "tokenizer_pickle_sha256": "c3945190ac5c38a6ac941480e21895763775619e756cde4d108cafb5a081e185",
+      "vocab_size": 32768
+    },
+    "training_dataset_id": "sft-train-v1:smoltalk+mmlu+2gsm8k+2identity+simple-spelling+spellingbee:shuffle42",
+    "validation_dataset_id": "sft-val-v1:smoltalk+mmlu+gsm8k:shuffle42"
+  },
+  "dataset_manifest_sha256": "c23396b8f6c9459c9eca350a2418989875fae7ea4296d14ef84537adb33b0d6e",
+  "environment": {
+    "cuda_version": "12.8",
+    "device_names": [
+      "NVIDIA A800-SXM4-80GB",
+      "NVIDIA A800-SXM4-80GB"
+    ],
+    "device_type": "cuda",
+    "dtype": "bfloat16",
+    "torch_version": "2.9.1+cu128",
+    "world_size": 2
+  },
+  "limitations": [
+    "One 30-step target-scale run per strategy; no multi-seed uncertainty estimate.",
+    "The budget fixes padded tokens and optimizer steps, so better packing exposes more content tokens to the model.",
+    "Validation uses 262144 padded tokens and is suitable for a pilot comparison, not a definitive quality claim.",
+    "Reported throughput excludes the first 10 optimizer steps and does not include dataset/model startup or validation.",
+    "Strategies ran sequentially and GPU performance state varied; wall-clock throughput ratios are observational, not causal speedup estimates."
+  ],
+  "model_parameters": 1681790292,
+  "parent_checkpoint": {
+    "model_tag": "d26",
+    "sha256": "e9bb6f3bbe483e8bc603df389ac96e7c4dac97ac3ef7862a1c7f76759d8e3f7a",
+    "source": "base",
+    "step": 14889
+  },
+  "schema_version": 1,
+  "status": "reviewed_single_run_target_scale_pilot",
+  "strategies": [
+    {
+      "content_per_padded_token_ratio_vs_sequential": 1.0,
+      "content_tokens_emitted": 759898,
+      "final_train_loss": 1.3276167049067473,
+      "measured_steps_after_warmup": 20,
+      "median_effective_content_tokens_per_second": 20072.56597832276,
+      "median_mfu_percent": 25.752239133352266,
+      "median_padded_tokens_per_second": 25979.5,
+      "observed_effective_content_throughput_ratio_vs_sequential": 1.0,
+      "packing_efficiency": 0.7726309581909875,
+      "padding_ratio": 0.22736904180901252,
+      "padding_tokens_emitted": 223622,
+      "peak_memory_bytes_rank0": 37436719104,
+      "raw_result": "sequential.json",
+      "raw_result_sha256": "8980a0636dd8b072aba4fefa307e94b45b5abdf305885a1492a3a4dffadd16fc",
+      "strategy": "sequential",
+      "target_tokens_emitted": 551166,
+      "validation_bpb": 0.4614574468629544
+    },
+    {
+      "content_per_padded_token_ratio_vs_sequential": 1.2868582362369685,
+      "content_tokens_emitted": 977881,
+      "final_train_loss": 1.3464731460764867,
+      "measured_steps_after_warmup": 20,
+      "median_effective_content_tokens_per_second": 23897.195618797785,
+      "median_mfu_percent": 23.82507510845691,
+      "median_padded_tokens_per_second": 24035.0,
+      "observed_effective_content_throughput_ratio_vs_sequential": 1.1905401454206408,
+      "packing_efficiency": 0.9942665121197332,
+      "padding_ratio": 0.005733487880266797,
+      "padding_tokens_emitted": 5639,
+      "peak_memory_bytes_rank0": 37436719104,
+      "raw_result": "first_fit.json",
+      "raw_result_sha256": "7a759b0ae1b20837ce065bc95629c23c8d4736f891430087456995ef73c43c26",
+      "strategy": "first_fit",
+      "target_tokens_emitted": 706267,
+      "validation_bpb": 0.4501742487853452
+    },
+    {
+      "content_per_padded_token_ratio_vs_sequential": 1.2888914038463057,
+      "content_tokens_emitted": 979426,
+      "final_train_loss": 1.330818447198212,
+      "measured_steps_after_warmup": 20,
+      "median_effective_content_tokens_per_second": 28156.804576419392,
+      "median_mfu_percent": 28.027264193024415,
+      "median_padded_tokens_per_second": 28274.5,
+      "observed_effective_content_throughput_ratio_vs_sequential": 1.4027506302296953,
+      "packing_efficiency": 0.9958374003578981,
+      "padding_ratio": 0.004162599642101838,
+      "padding_tokens_emitted": 4094,
+      "peak_memory_bytes_rank0": 37436719104,
+      "raw_result": "length_bucket.json",
+      "raw_result_sha256": "8c7544b0b886262851de1e47d9048ed0f9c22969d287052f234759e955e610a4",
+      "strategy": "length_bucket",
+      "target_tokens_emitted": 708860,
+      "validation_bpb": 0.4505257369872249
+    },
+    {
+      "content_per_padded_token_ratio_vs_sequential": 1.2905271496964066,
+      "content_tokens_emitted": 980669,
+      "final_train_loss": 1.3288813708513139,
+      "measured_steps_after_warmup": 20,
+      "median_effective_content_tokens_per_second": 28157.14158430942,
+      "median_mfu_percent": 27.991784925312867,
+      "median_padded_tokens_per_second": 28239.0,
+      "observed_effective_content_throughput_ratio_vs_sequential": 1.4027674197069544,
+      "packing_efficiency": 0.9971012282414186,
+      "padding_ratio": 0.0028987717585814217,
+      "padding_tokens_emitted": 2851,
+      "peak_memory_bytes_rank0": 37436719104,
+      "raw_result": "best_fit.json",
+      "raw_result_sha256": "b4d59bd7b23361dbd3c683f52125562c84863f7041a9bb91d5d55a05a10e8ed3",
+      "strategy": "best_fit",
+      "target_tokens_emitted": 709187,
+      "validation_bpb": 0.4498460554537192
+    }
+  ],
+  "summary_command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/rickzhou/Code/Codex/nanochat/nanochat/benchmarks/summarize_sft_packing_ablation.py",
+    "--input-dir=benchmark_results/sft_packing_d26_a800_30step_v2",
+    "--output=docs/results/sft_packing_d26_a800_30step/summary.json",
+    "--checkpoint-sha256=e9bb6f3bbe483e8bc603df389ac96e7c4dac97ac3ef7862a1c7f76759d8e3f7a",
+    "--dataset-manifest=docs/results/sft_packing_d26_a800_30step/dataset_manifest.json"
+  ],
+  "training_git_commit": "3c0f50e0bddf23f06ccb65c3973405dcdfe1a70a"
+}

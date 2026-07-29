@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "mode": "offline_cached_datasets",
+  "training_dataset_id": "sft-train-v1:smoltalk+mmlu+2gsm8k+2identity+simple-spelling+spellingbee:shuffle42",
+  "validation_dataset_id": "sft-val-v1:smoltalk+mmlu+gsm8k:shuffle42",
+  "huggingface_datasets": [
+    {
+      "name": "HuggingFaceTB/smol-smoltalk",
+      "revision": "f73fe857d519ff6ac5af2ea67c4d3834da7b8bcc"
+    },
+    {
+      "name": "cais/mmlu",
+      "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+    },
+    {
+      "name": "openai/gsm8k",
+      "revision": "740312add88f781978c0658806c59bc2815b9866"
+    }
+  ],
+  "local_files": [
+    {
+      "name": "identity_conversations.jsonl",
+      "sha256": "85a6a96342b88addeb1b8267933c47a6e3ceb1dfc07b305b805fd7ff8106878e"
+    },
+    {
+      "name": "words_alpha.txt",
+      "sha256": "3ed0c94610d8bcf7c11bbb49c56aa49c7234d32b66824df91f554169e572da48"
+    }
+  ],
+  "tokenizer": {
+    "vocab_size": 32768,
+    "tokenizer_pickle_sha256": "c3945190ac5c38a6ac941480e21895763775619e756cde4d108cafb5a081e185",
+    "token_bytes_sha256": "a9b173c3e103bae4c1e2a17f602d563c85596a0e580201fea8b0e9c54c054dcb"
+  },
+  "notes": [
+    "All Hugging Face datasets were loaded from the server cache with HF_DATASETS_OFFLINE=1 and HF_HUB_OFFLINE=1.",
+    "SimpleSpelling and SpellingBee are deterministic generated tasks; words_alpha.txt is their local word-list dependency.",
+    "Dataset ownership is deterministic by rank and the TaskMixture order is fixed by shuffle seed 42."
+  ]
+}

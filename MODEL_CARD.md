@@ -52,6 +52,12 @@ machine-readable manifest.
 
 ## Verified runtime evidence
 
+- In a 30-step, 2×A800 pilot from this base checkpoint, best-fit packing emitted
+  980,669 non-padding content tokens versus 759,898 for sequential under the
+  same padded-token budget (+29.05%). Fixed-policy validation BPB was
+  0.4498/0.4615, but the single-run short budget is not a definitive quality or
+  wall-clock result:
+  [`sft_packing_d26_a800_30step/summary.json`](docs/results/sft_packing_d26_a800_30step/summary.json).
 - A two-rank A800 interruption/resume acceptance test reproduced input batches,
   losses, final model parameters, optimizer state, and packer state exactly on
   both ranks:
