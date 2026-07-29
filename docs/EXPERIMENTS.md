@@ -30,7 +30,8 @@ Commands:
 
 ```bash
 python -m benchmarks.benchmark_sft_packing \
-  --samples=10000 --batches=500 --output=benchmark_results/packing_cpu.json
+  --samples=10000 --batches=500 --seeds=42,1337,2026 \
+  --output=benchmark_results/packing_cpu.json
 
 BASE_MODEL_TAG=<tag> ABLATION_STEPS=200 NPROC_PER_NODE=8 \
   bash runs/sft_packing_ablation.sh

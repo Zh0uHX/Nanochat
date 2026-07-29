@@ -173,6 +173,7 @@ CPU packing-policy benchmark:
 
 ```bash
 python -m benchmarks.benchmark_sft_packing \
+  --seeds=42,1337,2026 \
   --output=benchmark_results/packing_cpu.json
 ```
 
